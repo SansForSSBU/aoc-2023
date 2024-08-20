@@ -30,16 +30,25 @@ def find_first_number(line, nums):
             lowest_index = idx
     return first_num
 
-total = 0
-nums = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+nums = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 reversed_nums = [num[::-1] for num in nums]
+
+pt1_ans = 0
+pt2_ans = 0
 
 with open("puzzle1/input.txt") as f:
     lines=f.read().split("\n")
     for line in lines:
+
+        first = find_first_number(line, nums[:9])
+        last = find_first_number(line[::-1], reversed_nums[:9])
+        num = int(first+last)
+        pt1_ans += num
+
         first = find_first_number(line, nums)
         last = find_first_number(line[::-1], reversed_nums)
         num = int(first+last)
-        total += num
+        pt2_ans += num
 
-print(total)
+print(pt1_ans)
+print(pt2_ans)
