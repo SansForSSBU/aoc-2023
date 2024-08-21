@@ -39,6 +39,40 @@ def find_all_endpoints(seed, almanac):
         ends = ends + find_all_endpoints(s, almanac[1:])
     return ends
 
+def put_in_range(seed_range, mapping):
+    used_tiles = None
+    new_mapping = None
+    if seed_range[0] in range(mapping[1], mapping[1] + mapping[2]):
+        # Start of seed range is in plot range
+        lost_squares =  seed_range[0] - mapping[1]
+        translation = (mapping[0]-mapping[1])
+        used_tiles = [seed_range[0], min(mapping[2]-lost_squares, seed_range[1])]
+        new_mapping = [used_tiles[0]+translation, used_tiles[1]]
+    elif mapping[1] in range(seed_range[0], seed_range[0] + seed_range[1] + 1):
+        # Start of plot range is in seed range
+        lost_squares =   mapping[1] - seed_range[0]
+        translation = (mapping[0]-mapping[1])
+        used_tiles = [mapping[1], min(seed_range[1]-lost_squares, mapping[2])]
+        new_mapping = [used_tiles[0]+translation, used_tiles[1]]
+    return new_mapping
+
+def find_next_seed_ranges(seed_range, mappings):
+    next_ranges = []
+    for mapping in mappings:
+        new_range = put_in_range(seed_range, mapping)
+        if new_range:
+            next_ranges.append(new_range)
+    return next_ranges
+
+def find_all_range_endpoints(seed_range, almanac):
+    if len(almanac) == 0:
+        return [seed_range]
+    next_ranges = find_next_seed_ranges(seed_range, almanac[0])
+    all_next_ranges = []
+    for next_range in next_ranges:
+        all_next_ranges = all_next_ranges + find_all_range_endpoints(next_range, almanac[1:])
+    return all_next_ranges
+
 def solve_pt1():
     lowest = math.inf
     for seed in seeds:
@@ -46,7 +80,19 @@ def solve_pt1():
     return lowest
 
 def solve_pt2():
-    return 0
+    """
+    seed_range = [5, 5]
+    mapp = [1, 3, 3]
+    print(put_in_range(seed_range, mapp))
+    """
+    seed_ranges = []
+    i = 0
+    while i <= len(seeds) - 2:
+        seed_ranges.append([seeds[i], seeds[i]+seeds[i+1]+1])
+        i+=2
+    result = find_all_range_endpoints(seed_ranges[0], maps)
+    print(result)
+    return min([ra[0] for ra in result])
 
 print(solve_pt1())
 print(solve_pt2())
