@@ -10,3 +10,6 @@ def solve_pt1():
     return 0
 def solve_pt2():
     return 0
+
+print(solve_pt1())
+print(solve_pt2())
