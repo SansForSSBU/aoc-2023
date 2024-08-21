@@ -54,20 +54,22 @@ def put_in_range(seed_range, mapping):
         translation = (mapping[0]-mapping[1])
         used_tiles = [mapping[1], min(seed_range[1]-lost_squares, mapping[2])]
         new_mapping = [used_tiles[0]+translation, used_tiles[1]]
-    return new_mapping
+    return used_tiles,new_mapping
 
 def find_next_seed_ranges(seed_range, mappings):
+    used_tile_ranges = []
     next_ranges = []
     for mapping in mappings:
-        new_range = put_in_range(seed_range, mapping)
+        used_tiles,new_range = put_in_range(seed_range, mapping)
         if new_range:
             next_ranges.append(new_range)
-    return next_ranges
+            used_tile_ranges.append(used_tiles)
+    return used_tile_ranges,next_ranges
 
 def find_all_range_endpoints(seed_range, almanac):
     if len(almanac) == 0:
         return [seed_range]
-    next_ranges = find_next_seed_ranges(seed_range, almanac[0])
+    used_tile_ranges,next_ranges = find_next_seed_ranges(seed_range, almanac[0])
     all_next_ranges = []
     for next_range in next_ranges:
         all_next_ranges = all_next_ranges + find_all_range_endpoints(next_range, almanac[1:])
@@ -80,19 +82,17 @@ def solve_pt1():
     return lowest
 
 def solve_pt2():
-    """
-    seed_range = [5, 5]
-    mapp = [1, 3, 3]
-    print(put_in_range(seed_range, mapp))
-    """
     seed_ranges = []
     i = 0
     while i <= len(seeds) - 2:
-        seed_ranges.append([seeds[i], seeds[i]+seeds[i+1]+1])
+        seed_ranges.append([seeds[i], seeds[i+1]])
         i+=2
-    result = find_all_range_endpoints(seed_ranges[0], maps)
-    print(result)
-    return min([ra[0] for ra in result])
+    best = math.inf
+    for seed_range in seed_ranges:
+        result = find_all_range_endpoints(seed_range, maps)
+        if len(result) > 0:
+            best = min(min([ra[0] for ra in result]), best)
+    return best
 
 print(solve_pt1())
 print(solve_pt2())
