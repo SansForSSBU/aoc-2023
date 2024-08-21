@@ -26,26 +26,27 @@ def can_use(mapping, num):
 def translate(mapping, num):
     return num + (mapping[0] - mapping[1])
 
-def find_lowest_endpoint(seed, almanac):
+def find_all_endpoints(seed, almanac):
     if len(almanac) == 0:
-        return seed
+        return [seed]
     mapping = almanac[0]
     valid_mappings = [m for m in mapping if can_use(m, seed)]
     valid_next_seeds = [translate(m, seed) for m in valid_mappings]
-    best = math.inf
+    ends = []
     if len(valid_next_seeds) == 0:
-        best = min(find_lowest_endpoint(seed, almanac[1:]), best)
+        ends = ends + find_all_endpoints(seed, almanac[1:])
     for s in valid_next_seeds:
-        best = min(find_lowest_endpoint(s, almanac[1:]), best)
-    return best
+        ends = ends + find_all_endpoints(s, almanac[1:])
+    return ends
 
 def solve_pt1():
     lowest = math.inf
-    print(maps[0])
     for seed in seeds:
-        lowest = min(find_lowest_endpoint(seed, maps), lowest)
+        lowest = min(min(find_all_endpoints(seed, maps)), lowest)
     return lowest
+
 def solve_pt2():
     return 0
 
 print(solve_pt1())
+print(solve_pt2())
