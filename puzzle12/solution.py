@@ -12,6 +12,8 @@ def is_valid_configuration(line):
     criteria = line[1].copy()
     length = 0
     for char in line[0]:
+        if char == "?":
+            return True
         if char == "#":
             length += 1
         elif length > 0:
@@ -21,18 +23,21 @@ def is_valid_configuration(line):
             length = 0
     return ((len(criteria) == 0 and length == 0) or (len(criteria) == 1 and criteria[0] == length))
 
-def find_all_configurations(condition_report):
+def find_all_configurations(line):
+    condition_report = line[0]
+    if not is_valid_configuration(line):
+        return []
     if condition_report.count("?") == 0:
         return [condition_report]
     possible_configurations = []
-    possible_configurations = possible_configurations + find_all_configurations(condition_report.replace("?", "#", 1))
-    possible_configurations = possible_configurations + find_all_configurations(condition_report.replace("?", ".", 1))
+    possible_configurations = possible_configurations + find_all_configurations((condition_report.replace("?", "#", 1), line[1]))
+    possible_configurations = possible_configurations + find_all_configurations((condition_report.replace("?", ".", 1), line[1]))
     return possible_configurations
 
 def solve_pt1():
     answer = 0
     for line in lines:
-        configs = find_all_configurations(line[0])
+        configs = find_all_configurations(line)
         valid_configs = [config for config in configs if is_valid_configuration([config, line[1]])]
         answer += len(valid_configs)
     return answer
@@ -44,7 +49,5 @@ def unfold(reports):
     return reports
 
 print("Part 1:", solve_pt1())
-print(lines[0])
 lines = unfold(lines)
-print(lines[0])
 print("Part 2:", solve_pt1())
