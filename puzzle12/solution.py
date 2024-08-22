@@ -37,8 +37,14 @@ def solve_pt1():
         answer += len(valid_configs)
     return answer
 
-def solve_pt2():
-    return 0
+def unfold(reports):
+    for n, report in enumerate(reports):
+        new_report = ("?".join([report[0]]*5), report[1]*5)
+        reports[n] = new_report
+    return reports
 
 print("Part 1:", solve_pt1())
-print("Part 2:", solve_pt2())
+print(lines[0])
+lines = unfold(lines)
+print(lines[0])
+print("Part 2:", solve_pt1())
