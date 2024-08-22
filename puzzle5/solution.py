@@ -94,5 +94,5 @@ def solve_pt2():
             best = min(min([ra[0] for ra in result]), best)
     return best
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())

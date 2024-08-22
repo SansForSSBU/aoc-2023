@@ -67,8 +67,8 @@ def solve_pt2():
     cycles = [[cycle[0][0], cycle[1]] for cycle in cycles]
     return lcm(*[cycle[0] for cycle in cycles])
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())
 
 
 """

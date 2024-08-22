@@ -156,5 +156,5 @@ def solve_pt2():
         result += (length - Os)
     return result
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())

@@ -78,7 +78,7 @@ key = {
     "K": 11,
     "A": 12
 }
-print(solve_pt1())
+print("Part 1:", solve_pt1())
 pt2 = True
 key = {
     "J": 0,
@@ -95,4 +95,4 @@ key = {
     "K": 11,
     "A": 12
 }
-print(solve_pt2())
+print("Part 2:", solve_pt2())

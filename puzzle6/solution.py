@@ -6,7 +6,6 @@ with open("puzzle6/input.txt") as input:
 time = [int(x) for x in [x for x in lines[0].split(" ") if len(x) > 0][1:]]
 distance = [int(x) for x in [x for x in lines[1].split(" ") if len(x) > 0][1:]]
 records = list(zip(time, distance))
-print(records)
 
 from math import sqrt, ceil
 def calculate_distance(time, hold):
@@ -36,8 +35,7 @@ def solve_pt2():
     for i in distance:
         full_distance = full_distance + str(i)
     full_distance = int(full_distance)
-    print(full_time, full_distance)
     return button_holds([full_time, full_distance])
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())

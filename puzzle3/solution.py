@@ -105,5 +105,5 @@ def solve_pt2():
         pt2_ans += calc_gear(gear_coord)
     return pt2_ans
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())

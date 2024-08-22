@@ -31,7 +31,7 @@ def solve_pt1():
     score = 0
     for card in cards:
         score += score_card(card)
-    return score
+    return int(score)
 
 card_dict = {}
 for i, line in enumerate(lines):
@@ -48,5 +48,5 @@ def solve_pt2():
 
     return sum(my_cards.values())
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())

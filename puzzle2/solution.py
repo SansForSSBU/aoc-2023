@@ -33,5 +33,5 @@ with open("puzzle2/input.txt") as input:
             power = power * v
         pt2_ans += power
 
-print("Part 1: ", pt1_ans)
-print("Part 2: ", pt2_ans)
+print("Part 1:", pt1_ans)
+print("Part 2:", pt2_ans)

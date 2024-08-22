@@ -54,5 +54,5 @@ def solve_pt1(factor):
             result += taxicab_distance_part2(point1, point2, empty_rows, empty_columns, factor)
     return result
 
-print(solve_pt1(2))
-print(solve_pt1(1000000))
+print("Part 1:", solve_pt1(2))
+print("Part 2:", solve_pt1(1000000))

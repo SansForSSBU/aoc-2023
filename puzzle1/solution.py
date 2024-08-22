@@ -50,5 +50,5 @@ with open("puzzle1/input.txt") as f:
         num = int(first+last)
         pt2_ans += num
 
-print(pt1_ans)
-print(pt2_ans)
+print("Part 1:", pt1_ans)
+print("Part 2:", pt2_ans)
