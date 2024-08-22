@@ -1,3 +1,4 @@
+start=$SECONDS
 puzzle=1
 while [ -d puzzle$puzzle ]
 do
@@ -6,3 +7,5 @@ do
     echo ""
     puzzle=$((puzzle+1))
 done
+duration=$(( SECONDS - start))
+echo Took $duration seconds
