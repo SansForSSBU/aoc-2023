@@ -11,5 +11,5 @@ def solve_pt1():
 def solve_pt2():
     return 0
 
-print(solve_pt1())
-print(solve_pt2())
+print("Part 1:", solve_pt1())
+print("Part 2:", solve_pt2())
