@@ -111,18 +111,57 @@ def summarise_notes(x_reflects, y_reflects):
 def solve_pt1():
     result = 0
     for image in images:
-        mirrors = find_reflection_lines(image)
-        x_reflects = mirrors[0]
-        y_reflects = mirrors[1]
-        summary = summarise_notes(mirrors[0], mirrors[1])
-        #print(" ")
-        #print_image(image, x_reflects, y_reflects)
-        #print("Answer: ", summarise_notes(x_reflects, y_reflects))
+        summary = get_summary(image)
         result += summary
     return result
 
-def solve_pt2():
-    return 0
+def get_summary(image):
+    mirrors = find_reflection_lines(image)
+    summary = summarise_notes(mirrors[0], mirrors[1])
+    if print_images:
+        print(" ")
+        print_image(image, mirrors[0], mirrors[1])
+        print("Answer: ", summary)
+    return summary
 
+opposites = {
+    "#": ".",
+    ".": "#"
+}
+
+def unsmudge(image):
+    img = image.copy()
+    original_mirrors = find_reflection_lines(image)
+    for y, l in enumerate(img):
+        for x, c in enumerate(l):
+            new_line = l[:x] + opposites[c] + l[x+1:]
+            img[y] = new_line
+            mirrors = find_reflection_lines(img) 
+            if mirrors != original_mirrors and (len(mirrors[0]) + len(mirrors[1])) > 0:
+                if print_images_pt2:
+                    print_image(img, mirrors[0], mirrors[1])
+                    print(" ")
+                    print_image(image, original_mirrors[0], original_mirrors[1])
+                    print(" ")
+                for mirror in original_mirrors[0]:
+                    if mirror in mirrors[0]: mirrors[0].remove(mirror)
+                for mirror in original_mirrors[1]:
+                    if mirror in mirrors[1]: mirrors[1].remove(mirror)
+                img[y] = l
+                return summarise_notes(mirrors[0], mirrors[1])
+            img[y] = l
+    return None # This shouldn't happen
+            
+
+def solve_pt2():
+    answer = 0
+    for image in images:
+        answer += unsmudge(image)
+
+    return answer
+
+print_images = False
+print_images_pt2 = False
 print("Part 1:", solve_pt1())
 print("Part 2:", solve_pt2())
+
