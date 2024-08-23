@@ -1,0 +1,25 @@
+Can we use the repetition to our advantage?
+
+Can we cut the problem in half repeatedly?
+
+
+On a contiguous row of ?'s and #'s which is surrounded by whitespace, find all sequences of numbers which that line could meet.
+
+For each of these sequences:
+Split the problem into two new problems around that sequence of numbers. 
+The left problem is up to and not including the sequence that number meets, and the right problem is beyond the sequence that number meets.
+Calculate the number of solutions for both sub-problems (you may find one sub-problem has 0 solutions, that's fine.) Multiply these two numbers together.
+
+Add up the result from each sequence, and you should have a solution!
+
+
+Eventually, we'll end up with only 1 UNK block in our sequence.
+Then we solve the problem normally, to get the number of permutations.
+
+Rethink.
+
+Consume characters one at a time.
+When encountering a block of ?s, figure out the "latest" way it could meet the first criteria.
+Going back from there, how many other ways could it meet the first criteria?
+
+For each of these ways, recurse down into a problem where we have met the first criteria (so the second criteria is the new first) and the rest of the criteria still do.

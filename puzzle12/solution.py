@@ -1,3 +1,4 @@
+import math
 
 lines = []
 with open("puzzle12/input.txt") as input:
@@ -42,7 +43,7 @@ def base_method(line):
 def solve_pt1():
     answer = 0
     for line in lines:
-        answer += base_method(line)
+        answer += new_method(line)#base_method(line)
     return answer
 
 def unfold(reports):
@@ -51,8 +52,63 @@ def unfold(reports):
         reports[n] = new_report
     return reports
 
+def latest_first_criteria_meet(line):
+    earliest_space = line[0].find(".", line[0].find("#"))
+    if earliest_space == -1:
+        earliest_space = len(line[0])
+    first_overflow = line[0].find("#"*(line[1][0]+1))
+    if first_overflow == -1:
+        first_overflow = math.inf
+    others_impossible_at = len(line[0]) - (sum(line[1][1:]) + len(line[1][1:]))
+    return min(earliest_space-1, first_overflow-2, others_impossible_at-1)
+
+def can_meet_criteria_0_at(line, pos):
+    l = line[0][:pos+1]
+    if pos+1 < len(line[0]) and line[0][pos+1] == "#":
+        return False
+    first_hash = l.find("#")
+    min_line_length = 0
+    if first_hash != -1:
+        min_line_length = pos - first_hash + 1
+    max_line_length = 0
+    for chr in reversed(l):
+        if chr == ".":
+            break
+        max_line_length += 1
+    required_length = line[1][0]
+    ret = (min_line_length <= required_length and max_line_length >= required_length)
+    return ret
+
+def new_method(line):
+    # Base case
+    if len(line[1]) == 0:
+        if line[0].count("#") == 0:
+            return 1
+        else:
+            return 0
+    last = latest_first_criteria_meet(line)
+    possibilities = []
+    for i in range(last+1):
+        if can_meet_criteria_0_at(line, i):
+            possibilities.append(i)
+    retvals = []
+    for p in possibilities:
+        newline = [line[0][p+2:], line[1][1:]]
+        retvals.append(new_method(newline))
+    return sum(retvals)
+
+    
+
+
+
 def solve_pt2():
-    return 0
+    answer = 0
+    answer = new_method(lines[5])
+    """
+    for line in lines:
+        answer += new_method(line)
+    """
+    return answer
 
 print("Part 1:", solve_pt1())
 lines = unfold(lines)
