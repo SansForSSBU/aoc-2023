@@ -41,10 +41,10 @@ def base_method(line):
     return len(valid_configs)
 
 def solve_pt1():
-    answer = 0
+    ans = 0
     for line in lines:
-        answer += new_method(line)#base_method(line)
-    return answer
+        ans += new_method(line)
+    return ans
 
 def unfold(reports):
     for n, report in enumerate(reports):
@@ -80,39 +80,46 @@ def can_meet_criteria_0_at(line, pos):
     return ret
 
 def new_method(line):
-    # Base case
-    if len(line[1]) == 0:
-        if line[0].count("#") == 0:
-            return 1
-        else:
-            return 0
-    last = latest_first_criteria_meet(line)
-    possibilities = []
-    for i in range(last+1):
-        if can_meet_criteria_0_at(line, i):
-            possibilities.append(i)
-    retvals = []
-    for p in possibilities:
-        newline = [line[0][p+2:], line[1][1:]]
-        retvals.append(new_method(newline))
-    return sum(retvals)
+    new_dict = {}
+    old_dict = {0: 1}
+    curr_positions = [0]
+    conds = line[1].copy()
+    while len(conds) > 0:
+        new_dict = {}
+        next_positions = set()
+        for curr_pos in curr_positions:
+            l = [line[0][curr_pos:], conds]
+            this_next_positions = set()
+            last = latest_first_criteria_meet(l)
+            for i in range(last+1):
+                if can_meet_criteria_0_at(l, i):
+                    next_positions.add(i+2+curr_pos)
+                    this_next_positions.add(i+2+curr_pos)
+            for pos in this_next_positions:
+                new_dict[pos] = new_dict.get(pos, 0) + old_dict[curr_pos]
+        curr_positions = next_positions
+        del conds[0]
+        old_dict = new_dict
+    result = 0
+    for k in new_dict.keys():
+        if line[0].find("#", k) == -1:
+            result += new_dict[k]
+    return result
 
-    
+def split_criteria(criteria):
+    return [criteria[:int(len(criteria)/2)], criteria[int(len(criteria)/2):]]
 
-
-
-def solve_pt2():
-    answer = 0
-    answer = new_method(lines[5])
-    """
-    for line in lines:
-        answer += new_method(line)
-    """
-    return answer
+def get_splits(text):
+    splits = []
+    for pt in range(1, len(text)):
+        LHS = text[:pt]
+        RHS = text[pt:]
+        splits.append([LHS, RHS])
+    return splits
 
 print("Part 1:", solve_pt1())
 lines = unfold(lines)
-print("Part 2:", solve_pt2())
+print("Part 2:", solve_pt1())
 
 
 """
