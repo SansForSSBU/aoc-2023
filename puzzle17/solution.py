@@ -85,8 +85,9 @@ def solve_pt1():
     states_checked = 0
     states = [State((0, 0), d, max_path_length, 0) for d in [D.EAST, D.SOUTH]]
     while len(states) > 0:
-        idx, state = min(enumerate(states), key=lambda x:x[1].cost)
-        del states[idx]
+        states.sort(key=lambda x: x.cost)
+        state = states[0]
+        del states[0]
         add_to_checked_states(state)
         if states_checked % 1000 == 0:
             print(states_checked)
@@ -101,15 +102,16 @@ def solve_pt1():
             else:
                 duplicate.cost = min(state.cost, duplicate.cost)
             
-    end_cost = min([state.cost for state in checked_states[(140,140)]])
+    end_cost = min([state.cost for state in checked_states[(140,140)] if (max_path_length-state.tiles_left >= min_path_length)])
     return end_cost
 
-def solve_pt2():
-    return 0
-
-min_path_length = 1
-max_path_length = 3
-print("Part 1:", solve_pt1())
-min_path_length = 4
-max_path_length = 10
-print("Part 2:", solve_pt2())
+pt1 = True
+pt2 = False
+if pt1:
+    min_path_length = 1
+    max_path_length = 3
+    print("Part 1:", solve_pt1())
+if pt2:
+    min_path_length = 4
+    max_path_length = 10
+    print("Part 2:", solve_pt1())
