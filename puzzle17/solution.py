@@ -97,18 +97,20 @@ def solve_pt1():
         if state_has_been_checked(state):
             continue
         add_to_checked_states(state)
-        if states_checked % 1000 == 0:
+        if states_checked % 1000 == 0 and print_progress:
             print(states_checked)
         states_checked += 1
         next_states = state.get_next_states(lines)
         for state in next_states:
-            heapq.heappush(states, state)
+            if not state_has_been_checked(state):
+                heapq.heappush(states, state)
             
     end_cost = min([state.cost for state in checked_states[(140,140)] if (max_path_length-state.tiles_left >= min_path_length)])
     return end_cost
 
+print_progress = False
 pt1 = True
-pt2 = False
+pt2 = True
 if pt1:
     min_path_length = 1
     max_path_length = 3
