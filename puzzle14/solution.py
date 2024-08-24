@@ -73,38 +73,28 @@ def get_load(map):
                 load += len(map) - y
     return load
 
+def find_rocks(map):
+    return [(x, y) for y, l in enumerate(lines) for x, c in enumerate(l) if c == "O"]
+
 def solve_pt1():
-    for y, l in enumerate(lines):
-        for x, c in enumerate(l):
-            if c == "O":
-                new_pos = move_rock(lines, (x, y), D.NORTH)
+    for x, y in find_rocks(lines):
+        move_rock(lines, (x, y), D.NORTH)
     return get_load(lines)
 
-def spin_cycle():
-    # North
-    for y, l in enumerate(lines):
-        for x, c in enumerate(l):
-            if c == "O":
-                move_rock(lines, (x, y), D.NORTH)
 
-    # West
-    for y, l in enumerate(lines):
-        for x, c in enumerate(l):
-            if c == "O":
-                move_rock(lines, (x, y), D.WEST)
 
-    # South
-    for y, l in reversed(list(enumerate(lines))):
-        for x, c in enumerate(l):
-            if c == "O":
-                move_rock(lines, (x, y), D.SOUTH)
-
-    # East
-    for y, l in enumerate(lines):
-        for x, c in reversed(list(enumerate(l))):
-            if c == "O":
-                move_rock(lines, (x, y), D.EAST)
+def spin_cycle():    
+    for x, y in find_rocks(lines):
+        move_rock(lines, (x, y), D.NORTH)
     
+    for x, y in find_rocks(lines):
+        move_rock(lines, (x, y), D.WEST)
+
+    for x, y in reversed(find_rocks(lines)):
+        move_rock(lines, (x, y), D.SOUTH)
+
+    for x, y in reversed(find_rocks(lines)):
+        move_rock(lines, (x, y), D.EAST)
     
     return 0
 
