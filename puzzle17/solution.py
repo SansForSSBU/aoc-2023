@@ -94,19 +94,15 @@ def solve_pt1():
     heapq.heapify(states)
     while len(states) > 0:
         state = heapq.heappop(states)
+        if state_has_been_checked(state):
+            continue
         add_to_checked_states(state)
         if states_checked % 1000 == 0:
             print(states_checked)
         states_checked += 1
         next_states = state.get_next_states(lines)
         for state in next_states:
-            if state_has_been_checked(state):
-                continue
-            duplicate = next((x for x in states if x == state), None)
-            if duplicate is None:
-                states.append(state)
-            else:
-                duplicate.cost = min(state.cost, duplicate.cost)
+            heapq.heappush(states, state)
             
     end_cost = min([state.cost for state in checked_states[(140,140)] if (max_path_length-state.tiles_left >= min_path_length)])
     return end_cost
