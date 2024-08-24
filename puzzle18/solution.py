@@ -75,6 +75,7 @@ def unit_vector(vector):
 # Formula from https://tinyurl.com/yvyz9bd9
 def area_from_vertices(vertices):
     area = 0
+    vertices.append(vertices[0])
     n_vertices = len(vertices)
     for i in range(len(vertices) - 1):
         x_n = vertices[i][0]
@@ -83,6 +84,7 @@ def area_from_vertices(vertices):
         y_np1 = vertices[i+1][1]
         term = 0.5*(x_n*y_np1 - x_np1*y_n)
         area += term
+    del vertices[-1]
     return area
 
 def solve_pt1():
@@ -98,6 +100,7 @@ def solve_pt1():
 
         vertices.append(new_vertex)
         perimeter += distance
+    del vertices[-1] # Remove duplicate vertex
     return int(area_from_vertices(vertices) + perimeter/2 + 1)
 
 print("Part 1:", solve_pt1())
