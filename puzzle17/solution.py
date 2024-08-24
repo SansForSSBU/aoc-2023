@@ -1,21 +1,18 @@
 from enum import Enum
 import operator
 import copy
+import heapq
 
 lines = []
 with open("puzzle17/input.txt") as input:
     lines = input.read().split("\n")
 lines = [[int(x) for x in list(line)] for line in lines]
 
-
-
 class D(Enum):
     NORTH = 0
     EAST = 1
     SOUTH = 2
     WEST = 3
-
-
 
 def go_direction(pos, direction):
     if direction == D.NORTH:
@@ -77,17 +74,13 @@ class State:
         for state in next_states:
             state.cost += get_tile(map, state.coords)
         return next_states
-        
-        
-        
 
-checked_states = {}
 def add_to_checked_states(state):
     checked_states[state.coords] = checked_states.get(state.coords, []) + [state]
+
 def state_has_been_checked(state):
     return state in checked_states.get(state.coords, [])
 
-import heapq
 def solve_pt1():
     states_checked = 0
     states = [State((0, 0), d, max_path_length, 0) for d in [D.EAST, D.SOUTH]]
@@ -104,18 +97,19 @@ def solve_pt1():
         for state in next_states:
             if not state_has_been_checked(state):
                 heapq.heappush(states, state)
-            
     end_cost = min([state.cost for state in checked_states[(140,140)] if (max_path_length-state.tiles_left >= min_path_length)])
     return end_cost
 
 print_progress = False
 pt1 = True
 pt2 = True
+min_path_length = 1
+max_path_length = 3
+checked_states = {}
 if pt1:
-    min_path_length = 1
-    max_path_length = 3
     print("Part 1:", solve_pt1())
+min_path_length = 4
+max_path_length = 10
+checked_states = {}
 if pt2:
-    min_path_length = 4
-    max_path_length = 10
     print("Part 2:", solve_pt1())
