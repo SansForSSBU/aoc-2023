@@ -77,8 +77,9 @@ def simulate_beam(beam, grid):
     return new_beams
 
 
-def solve_pt1():
-    starting_beam = [(0, 0), D.EAST]
+def solve_pt1(starting_beam):
+    global energised_squares
+    energised_squares = {}
     beams = [starting_beam]
     while len(beams) > 0:
         beam = beams[0]
@@ -86,8 +87,16 @@ def solve_pt1():
         beams = beams + simulate_beam(beam, lines)
         pass
     return len(energised_squares.keys())
-def solve_pt2():
-    return 0
 
-print("Part 1:", solve_pt1())
+def solve_pt2():
+    best = 0
+    for y in range(len(lines)):
+        best = max(solve_pt1([(0, y), D.EAST]), best)
+        best = max(solve_pt1([(0, len(lines[0])-1), D.WEST]), best)
+    for x in range(len(lines[0])):
+        best = max(solve_pt1([(x, 0), D.SOUTH]), best)
+        best = max(solve_pt1([(x, len(lines)-1), D.NORTH]), best)
+    return best
+
+print("Part 1:", solve_pt1([(0, 0), D.EAST]))
 print("Part 2:", solve_pt2())
