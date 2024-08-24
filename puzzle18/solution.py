@@ -63,42 +63,30 @@ def sub_coords(coord1, coord2):
 def multiply_coord(coord, factor):
     return (coord[0]*factor, coord[1]*factor)
 
-def get_possible_expansions(map, coords):
-    adjacent_tiles = get_adjacent_coords(coords)
-    adjacent_tiles = [coord for coord in adjacent_tiles if get_tile(map, coord) == "."]
-    return adjacent_tiles
+def unit_vector(vector):
+    x = 0
+    y = 0
+    if vector[0] < 0: x = -1
+    if vector[0] > 0: x = 1
+    if vector[1] < 0: y = -1
+    if vector[1] > 0: y = 1
+    return (x, y)
 
-def solve_pt1(start_pos, grid_square_size):
-    ans = 0
-    pos = start_pos
-    tile_map = ["."*grid_square_size for _ in range(grid_square_size)]
-    for line in lines:
-        direction = line[0]
-        n_squares = line[1]
-        for _ in range(n_squares):
-            pos = go_direction(pos, direction)
-            set_coord(tile_map, pos, "#")
-    expansions = [(0, 0)]
-    while len(expansions) > 0:
-        coord = expansions[0]
-        del expansions[0]
-        set_coord(tile_map, coord, "O")
-        new_expansion = get_possible_expansions(tile_map, coord)
-        for tile in new_expansion:
-            set_coord(tile_map, tile, "O")
-        expansions = expansions + new_expansion
-    for line in tile_map:
-        ans += line.count("#")
-        ans += line.count(".")
-    return ans
-
+# Formula from https://tinyurl.com/yvyz9bd9
 def area_from_vertices(vertices):
-    #WIP
     area = 0
-    x_positions = sorted(list(set(vertex[0] for vertex in vertices)))
+    n_vertices = len(vertices)
+    for i in range(len(vertices) - 1):
+        x_n = vertices[i][0]
+        y_n = vertices[i][1]
+        x_np1 = vertices[i+1][0]
+        y_np1 = vertices[i+1][1]
+        term = 0.5*(x_n*y_np1 - x_np1*y_n)
+        area += term
     return area
 
-def solve_pt2():
+def solve_pt1():
+    perimeter = 0
     v1 = (0, 0)
     vertices = [v1]
     sides = []
@@ -107,12 +95,22 @@ def solve_pt2():
         distance = instr[1]
         direction_vector = multiply_coord(go_direction((0,0), direction), distance)
         new_vertex = add_coords(vertices[-1], direction_vector)
+
         vertices.append(new_vertex)
-    return area_from_vertices(vertices)
+        perimeter += distance
+    return int(area_from_vertices(vertices) + perimeter/2 + 1)
 
-
-
-#grid_square_size = 800
-#pos =  (int(grid_square_size/2), int(grid_square_size/2))
-#print("Part 1:", solve_pt1(pos, grid_square_size))
-print("Part 2:", solve_pt2())
+print("Part 1:", solve_pt1())
+translation = {
+    0: D.EAST,
+    1: D.SOUTH,
+    2: D.WEST,
+    3: D.NORTH
+}
+for line in lines:
+    color = line[2]
+    color = color.strip("()#")
+    line[0] = translation[int(color[-1])]
+    line[1] = int(color[:-1], 16)
+    
+print("Part 2:", solve_pt1())
