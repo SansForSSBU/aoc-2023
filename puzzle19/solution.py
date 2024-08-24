@@ -1,3 +1,4 @@
+import copy
 lines = []
 with open("puzzle19/input.txt") as input:
     lines = input.read().split("\n")
@@ -8,6 +9,9 @@ class Part():
         for key in self.attrs:
             self.attrs[key] = int(self.attrs[key])
         self.location = "in"
+
+    def __str__(self):
+        return f"{self.location} {self.attrs}"
 
 class Rule():
     def __init__(self, spec):
@@ -29,6 +33,49 @@ class Rule():
             return part_value > self.value
         if self.operator == '<':
             return part_value < self.value
+    
+    def next_parts(self, part):
+        if not hasattr(self, "operator"):
+            state = copy.deepcopy(part)
+            state.location = self.sendto
+            return [state]
+        
+        curr_range = part.attrs[self.attr]
+        next_states = []
+        if self.operator == '>':
+            accept_start = max(curr_range[0], self.value+1)
+            reject_end = min(curr_range[-1], self.value)
+            if accept_start in curr_range:
+                # Accept
+                state = copy.deepcopy(part)
+                state.attrs[self.attr] = range(accept_start, curr_range[-1]+1)
+                state.location = self.sendto
+                next_states.append(state)
+                pass
+            if reject_end in curr_range:
+                # Reject
+                state = copy.deepcopy(part)
+                state.attrs[self.attr] = range(curr_range[0], reject_end+1)
+                next_states.append(state)
+                pass
+        if self.operator == '<':
+            accept_start = min(curr_range[-1], self.value-1)
+            reject_end = max(curr_range[0], self.value)
+            if accept_start in curr_range:
+                # Accept
+                state = copy.deepcopy(part)
+                state.attrs[self.attr] = range(accept_start, curr_range[-1]+1)
+                state.location = self.sendto
+                next_states.append(state)
+                pass
+            if reject_end in curr_range:
+                # Reject
+                state = copy.deepcopy(part)
+                state.attrs[self.attr] = range(curr_range[0], reject_end+1)
+                next_states.append(state)
+                pass
+        return next_states
+        
 
 
 class Workflow():
@@ -41,7 +88,23 @@ class Workflow():
         for rule in self.rules:
             if rule.match(part):
                 return rule.sendto
+    
+    def possible_next_states(self, part):
+        states = []
+        p = [part]
+        for rule in self.rules:
+            next_parts = []
+            for part in p:
+                new_parts = rule.next_parts(part)
+                while len(new_parts) > 0:
+                    part = new_parts.pop(0)
+                    if part.location != self.name:
+                        states.append(part)
+                    else:
+                        next_parts.append(part)
 
+            p = next_parts
+        return states
 
 def solve_pt1():
     ans = 0
@@ -57,7 +120,30 @@ def solve_pt1():
         parts.append(part)
     return ans
 def solve_pt2():
-    return 0
+    parts = [Part(lines[split+1])]
+    for attr in parts[0].attrs.keys():
+        parts[0].attrs[attr] = range(1, 4001)
+
+    ends = []
+    while len(parts) > 0:
+        part = parts.pop(0)
+        workflow = [w for w in workflows if w.name == part.location][0]
+        next_states = workflow.possible_next_states(part)
+        for s in next_states:
+            if s.location == "A":
+                ends.append(s)
+            elif s.location == "R":
+                continue
+            else:
+                parts.append(s)
+        #print([str(s) for s in next_states])
+    accepts = 0
+    for end in ends:
+        n = 1
+        for attr in end.attrs.values():
+            n = n * len(attr)
+        accepts += n
+    return accepts
 
 split = lines.index("")
 workflows = [Workflow(l) for l in lines[:split]]
