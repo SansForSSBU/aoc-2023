@@ -23,11 +23,9 @@ def get_column(map, x):
     return column
 
 def find_next_pos(map, coord, dir):
-    # South may not be working. Fix later.
     x = coord[0]
     y = coord[1]
-    if y == 50:
-        pass
+
     if dir == D.NORTH:
         l = get_column(map, coord[0])
         y = max(l.rfind("O", 0, coord[1]), l.rfind("#", 0, coord[1])) + 1
