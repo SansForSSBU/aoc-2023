@@ -46,6 +46,12 @@ class State:
         self.tiles_left = tiles_left
         self.cost = cost
     
+    def __lt__(self, other):
+        return self.cost < other.cost
+    
+    def __gt__(self, other):
+        return self.cost > other.cost
+
     # Two states with different costs will be considered equal.
     def __eq__(self, other):
         return self.coords == other.coords and self.dir == other.dir and self.tiles_left == other.tiles_left
@@ -81,13 +87,13 @@ def add_to_checked_states(state):
 def state_has_been_checked(state):
     return state in checked_states.get(state.coords, [])
 
+import heapq
 def solve_pt1():
     states_checked = 0
     states = [State((0, 0), d, max_path_length, 0) for d in [D.EAST, D.SOUTH]]
+    heapq.heapify(states)
     while len(states) > 0:
-        states.sort(key=lambda x: x.cost)
-        state = states[0]
-        del states[0]
+        state = heapq.heappop(states)
         add_to_checked_states(state)
         if states_checked % 1000 == 0:
             print(states_checked)
