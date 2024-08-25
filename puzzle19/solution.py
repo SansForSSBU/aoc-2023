@@ -71,16 +71,17 @@ class Rule():
             if accept_start in curr_range:
                 # Accept
                 state = copy.deepcopy(part)
-                state.attrs[self.attr] = range(accept_start, curr_range[-1]+1)
+                state.attrs[self.attr] = range(curr_range[0], accept_start+1)
                 state.location = self.sendto
                 next_states.append(state)
                 pass
             if reject_end in curr_range:
                 # Reject
                 state = copy.deepcopy(part)
-                state.attrs[self.attr] = range(curr_range[0], reject_end+1)
+                state.attrs[self.attr] = range(reject_end, curr_range[-1]+1)
                 next_states.append(state)
                 pass
+
         return next_states
     
         
@@ -133,16 +134,31 @@ def solve_pt1():
             continue
         parts.append(part)
     return ans
-def solve_pt2():
-    parts = [Part(lines[split+1])]
-    for attr in parts[0].attrs.keys():
-        parts[0].attrs[attr] = range(1, 4001)
 
+def get_possible_states(part):
+    n = 1
+    for attr in part.attrs.values():
+        n = n * len(attr)
+    return n
+
+def make_superpart():
+    part = Part(lines[split+1])
+    for attr in part.attrs.keys():
+        part.attrs[attr] = range(1, 4001)
+    return part
+
+def sum_states(states):
+    return sum([get_possible_states(s) for s in states])
+
+def solve_pt2():
+    parts = [make_superpart()]
     ends = []
     rejects = []
     while len(parts) > 0:
         part = parts.pop(0)
         workflow = [w for w in workflows if w.name == part.location][0]
+        if workflow.name == "fcr":
+            pass
         next_states = workflow.possible_next_states(part)
         print("Part: ", part)
         print("Workflow: ", workflow)
@@ -156,15 +172,17 @@ def solve_pt2():
                 rejects.append(s)
             else:
                 parts.append(s)
+        states_sum = sum_states(ends+rejects+parts)
+        expectation = sum_states([make_superpart()])
+        if states_sum != expectation:
+            print(states_sum)
+            print(expectation)
+            pass
         pass
-    accepts = 0
-    for end in ends + rejects:
-        n = 1
-        for attr in end.attrs.values():
-            n = n * len(attr)
-        accepts += n
+
+    accepts = sum_states(ends+rejects)
     print(accepts)
-    print(len(range(1,4001))*len(range(1,4001))*len(range(1,4001))*len(range(1,4001)))
+    print(get_possible_states(make_superpart()))
     return accepts
 
 split = lines.index("")
