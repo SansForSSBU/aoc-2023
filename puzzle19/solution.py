@@ -13,6 +13,7 @@ class Part():
     def __str__(self):
         return f"{self.location} {self.attrs}"
 
+    
 class Rule():
     def __init__(self, spec):
         operator_idx = max(spec.find("<"), spec.find(">"))
@@ -24,6 +25,12 @@ class Rule():
         self.attr,self.value = cond.split(self.operator)
         self.value = int(self.value)
         pass
+    
+    def __str__(self):
+        if hasattr(self, "operator"):
+            return f"{self.attr}{self.operator}{self.value} {self.sendto}"
+        else:  
+            return f"{self.sendto}"
 
     def match(self, part):
         if not hasattr(self, "operator"):
@@ -75,6 +82,7 @@ class Rule():
                 next_states.append(state)
                 pass
         return next_states
+    
         
 
 
@@ -84,6 +92,12 @@ class Workflow():
         self.name = l[0]
         self.rules = [Rule(r) for r in l[1].split(",")]
 
+    def __str__(self):
+        string = self.name + ":"
+        for rule in self.rules:
+            string = string + " " + str(rule) + ";"
+        return string
+    
     def move_part(self, part):
         for rule in self.rules:
             if rule.match(part):
@@ -102,7 +116,7 @@ class Workflow():
                         states.append(part)
                     else:
                         next_parts.append(part)
-
+                pass
             p = next_parts
         return states
 
@@ -125,24 +139,32 @@ def solve_pt2():
         parts[0].attrs[attr] = range(1, 4001)
 
     ends = []
+    rejects = []
     while len(parts) > 0:
         part = parts.pop(0)
         workflow = [w for w in workflows if w.name == part.location][0]
         next_states = workflow.possible_next_states(part)
+        print("Part: ", part)
+        print("Workflow: ", workflow)
+        print("Next states: ")
         for s in next_states:
+            print(s)
+            pass
             if s.location == "A":
                 ends.append(s)
             elif s.location == "R":
-                continue
+                rejects.append(s)
             else:
                 parts.append(s)
-        #print([str(s) for s in next_states])
+        pass
     accepts = 0
-    for end in ends:
+    for end in ends + rejects:
         n = 1
         for attr in end.attrs.values():
             n = n * len(attr)
         accepts += n
+    print(accepts)
+    print(len(range(1,4001))*len(range(1,4001))*len(range(1,4001))*len(range(1,4001)))
     return accepts
 
 split = lines.index("")
