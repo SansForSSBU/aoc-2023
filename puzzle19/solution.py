@@ -13,7 +13,6 @@ class Part():
     def __str__(self):
         return f"{self.location} {self.attrs}"
 
-    
 class Rule():
     def __init__(self, spec):
         operator_idx = max(spec.find("<"), spec.find(">"))
@@ -24,7 +23,6 @@ class Rule():
         cond,self.sendto = spec.split(":")
         self.attr,self.value = cond.split(self.operator)
         self.value = int(self.value)
-        pass
     
     def __str__(self):
         if hasattr(self, "operator"):
@@ -58,29 +56,28 @@ class Rule():
                 state.attrs[self.attr] = range(accept_start, curr_range[-1]+1)
                 state.location = self.sendto
                 next_states.append(state)
-                pass
             if reject_end in curr_range:
                 # Reject
                 state = copy.deepcopy(part)
                 state.attrs[self.attr] = range(curr_range[0], reject_end+1)
                 next_states.append(state)
-                pass
+
         if self.operator == '<':
             accept_start = min(curr_range[-1], self.value-1)
             reject_end = max(curr_range[0], self.value)
+
             if accept_start in curr_range:
                 # Accept
                 state = copy.deepcopy(part)
                 state.attrs[self.attr] = range(curr_range[0], accept_start+1)
                 state.location = self.sendto
                 next_states.append(state)
-                pass
+
             if reject_end in curr_range:
                 # Reject
                 state = copy.deepcopy(part)
                 state.attrs[self.attr] = range(reject_end, curr_range[-1]+1)
                 next_states.append(state)
-                pass
 
         return next_states
     
@@ -117,7 +114,6 @@ class Workflow():
                         states.append(part)
                     else:
                         next_parts.append(part)
-                pass
             p = next_parts
         return states
 
@@ -157,32 +153,16 @@ def solve_pt2():
     while len(parts) > 0:
         part = parts.pop(0)
         workflow = [w for w in workflows if w.name == part.location][0]
-        if workflow.name == "fcr":
-            pass
         next_states = workflow.possible_next_states(part)
-        print("Part: ", part)
-        print("Workflow: ", workflow)
-        print("Next states: ")
         for s in next_states:
-            print(s)
-            pass
             if s.location == "A":
                 ends.append(s)
             elif s.location == "R":
                 rejects.append(s)
             else:
                 parts.append(s)
-        states_sum = sum_states(ends+rejects+parts)
-        expectation = sum_states([make_superpart()])
-        if states_sum != expectation:
-            print(states_sum)
-            print(expectation)
-            pass
-        pass
 
-    accepts = sum_states(ends+rejects)
-    print(accepts)
-    print(get_possible_states(make_superpart()))
+    accepts = sum_states(ends)
     return accepts
 
 split = lines.index("")
