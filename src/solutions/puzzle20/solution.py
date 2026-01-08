@@ -1,4 +1,5 @@
 from math import lcm
+from copy import deepcopy
 
 class Pulse:
     def __init__(self, pulse, receiver, sender):
@@ -91,8 +92,10 @@ def solve_pt1():
     return highs*lows
 
 def solve_pt2():
+    global system
     button_presses = 0
-    pass
+    while True:
+        system.press_button()
     return button_presses
 
 def parse_input(input_file):
@@ -125,7 +128,9 @@ system = None
 def main(input_file):
     global system
     system = parse_input(input_file)
+    system_clone = deepcopy(system)
     pt1_ans = solve_pt1()
+    system = system_clone
     pt2_ans = solve_pt2()
     
     return (pt1_ans,pt2_ans)
