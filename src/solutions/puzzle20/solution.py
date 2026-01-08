@@ -13,8 +13,11 @@ class Pulse:
         if system.modules.get(self.receiver, None) is not None:
             system.modules[self.receiver].process_pulse(self)
         
-        if self.receiver in system.specials.keys() and self.pulse == False:
-            system.specials[self.receiver].append(system.presses)
+        if self.receiver in system.special_ons.keys():
+            if self.pulse == False:
+                system.special_ons[self.receiver].append(system.presses)
+            elif self.pulse == True:
+                system.special_offs[self.receiver].append(system.presses)
 
 class Module:
     def __init__(self, code, name, connections):
@@ -63,11 +66,20 @@ class System():
         self.presses = 0
         self.modules = modules
         self.pulse_queue = []
-        self.specials = {
+        self.special_ons = {
             "xc": [],
             "th": [],
             "pd": [],
             "bp": []
+        }
+        self.special_offs = {
+            "xc": [],
+            "th": [],
+            "pd": [],
+            "bp": []
+        }
+        self.states = {
+
         }
     
     def press_button(self):
@@ -84,6 +96,7 @@ class System():
             else:
                 raise ValueError()
             pulse.invoke()
+        self.states[self.presses] = self.modules["zh"].inputs
         return highs,lows
     
     def send_pulse(self, module_name, pulse):
@@ -104,63 +117,78 @@ def solve_pt1():
     return highs*lows
 
 def check_n2(n):
-    if n % 3847 != 0:
+    if n % 3847 > 1:
         return False
-    if (n+66) % 3906 != 0:
+    if (n+66) % 3906 > 1:
         return False
     return True
 
 def check_n3(n):
-    if n % 3847 != 0:
+    #if n % 3847 != 0:
+    #    return False
+    if (n+66) % 3906 > 1:
         return False
-    if (n+66) % 3906 != 0:
-        return False
-    if (n+3440) % 3658 != 0:
+    if (n+3440) % 3658 > 1:
         return False
     return True
 
 def check_n4(n):
-    if n % 3847 != 0:
+    if n % 3847 <= 1:
         return False
-    if (n+66) % 3906 != 0:
+    if (n+66) % 3906 > 1:
         return False
-    if (n+3440) % 3658 != 0:
+    if (n+3440) % 3658 > 1:
         return False
-    if (n+3278) % 3550 != 0:
+    if (n+3278) % 3550 > 1:
         return False
     return True
 
 def solve_pt2():
-    global system
-    while True:
-        system.press_button()
-        if system.presses == 100000:
-            break
-    
-    things = list(system.specials.values())
+    global system    
+    special_switches = [(system.special_ons[k], system.special_offs[k]) for k in system.special_ons.keys()]
+    turn_ons = [s[0] for s in special_switches]
+    turn_offs = [s[1] for s in special_switches]
+    flipflops = [module for module in system.modules.values() if module.type == "%"]
+    specials = ["ps", "kh", "mk", "ml"]
+    inputs = ["sr", "gd", "mg", "hf"]
+    chains = {}
+    for obj in inputs:
+        chain = [obj]
+        out = set()
+        i = 0
+        while i < len(chain):
+            for output in system.modules[chain[i]].outputs:
+                module = system.modules[output]
+                if module.type == "%":
+                    chain.append(module.name)
+                if module.type == "&":
+                    out.add(module.name)
+
+            i += 1
+        assert len(out) == 1
+        chains[list(out)[0]] = chain
+        pass
+    pass
+    for k,v in chains.items():
+
     reqs = []
-    for sublist in things:
+    for sublist in turn_ons:
         delta = sublist[2] - sublist[1]
         yint = sublist[0] % delta
         for item in sublist:
             if (item-yint) % delta != 0:
                 raise Exception()
         reqs.append((yint, delta))
+    
+    n = 3906-66
+    inc = 3906
+    while True:
+        n += inc
+        if check_n3(n):
+            break
     pass
-    problem = pulp.LpProblem("find_n", pulp.LpMinimize)
-    n = pulp.LpVariable("n", lowBound=1, cat="Integer")
-    a = pulp.LpVariable("a", lowBound=1, cat="Integer")
-    b = pulp.LpVariable("b", lowBound=1, cat="Integer")
-    c = pulp.LpVariable("c", lowBound=1, cat="Integer")
-    d = pulp.LpVariable("d", lowBound=1, cat="Integer")
-
-    lp_vars = [a,b,c,d]
-    problem += n
-    for idx, req in enumerate(reqs):
-        (yint, delta) = req
-        problem += n - yint == lp_vars[idx] * delta
-    problem.solve()
-    return int(pulp.value(n))
+    
+    return 0
 
 def parse_input(input_file):
     modules = {}
