@@ -71,17 +71,21 @@ def get_occupancy(grid, farmer_pos, n_steps):
                     next_to_check.add(adj)
                     occupancy.set_coords(adj, 1)
         to_check = list(next_to_check)
-    return occupancy
 
-def solve_pt1(grid, farmer_pos, n_steps):
-    occupancy = get_occupancy(grid, farmer_pos, n_steps)
-    ans = 0
+    even_occupancy = 0
+    odd_occupancy = 0
     for x in range(len(occupancy.grid[0])):
         for y in range(len(occupancy.grid)):
-            if (x+y) % 2 == 0:
+            if sum(add_positions(farmer_pos, (x,y))) % 2 == 0:
                 if occupancy.get_coords((x,y)) == 1:
-                    ans += 1
-    return ans
+                    odd_occupancy += 1
+                else:
+                    even_occupancy += 1
+    return even_occupancy, odd_occupancy
+
+def solve_pt1(grid, farmer_pos, n_steps):
+    (even_occupancy, odd_occupancy) = get_occupancy(grid, farmer_pos, n_steps)
+    return odd_occupancy
     pass
 
 def n_grids(n_field_steps):
