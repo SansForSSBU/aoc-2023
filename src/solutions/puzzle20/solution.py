@@ -3,7 +3,7 @@ from copy import deepcopy
 
 class Pulse:
     def __init__(self, pulse, receiver, sender):
-        self.pulse = pulse
+        self.pulse = pulse # True: high, False: low
         self.receiver = receiver
         self.sender = sender
     
@@ -11,6 +11,9 @@ class Pulse:
         global system
         if system.modules.get(self.receiver, None) is not None:
             system.modules[self.receiver].process_pulse(self)
+        
+        if self.receiver in system.specials.keys() and self.pulse == False:
+            system.specials[self.receiver].append(system.presses)
 
 class Module:
     def __init__(self, code, name, connections):
@@ -56,10 +59,18 @@ class Module:
 
 class System():
     def __init__(self, modules):
+        self.presses = 0
         self.modules = modules
         self.pulse_queue = []
+        self.specials = {
+            "xc": [],
+            "th": [],
+            "pd": [],
+            "bp": []
+        }
     
     def press_button(self):
+        self.presses += 1
         highs = 0
         lows = 0
         self.pulse_queue.append(Pulse(False, "broadcaster", "button"))
@@ -91,11 +102,53 @@ def solve_pt1():
         lows += l
     return highs*lows
 
+def check_n2(n):
+    if n % 3847 != 0:
+        return False
+    if (n+66) % 3906 != 0:
+        return False
+    return True
+
+def check_n3(n):
+    if n % 3847 != 0:
+        return False
+    if (n+66) % 3906 != 0:
+        return False
+    if (n+3440) % 3658 != 0:
+        return False
+    return True
+
+def check_n4(n):
+    if n % 3847 != 0:
+        return False
+    if (n+66) % 3906 != 0:
+        return False
+    if (n+3440) % 3658 != 0:
+        return False
+    if (n+3278) % 3550 != 0:
+        return False
+    return True
+
 def solve_pt2():
     global system
-    button_presses = 0
+    n = 0
+    increment = 3847
+    fn = 0
+    fns = [check_n2, check_n3, check_n4]
+    while fn < 3:
+        n += increment
+        if fns[fn](n):
+            increment = n
+            fn += 1
+    
+    return n
+    # n % 3847 = 0
+    # 
     while True:
         system.press_button()
+        if system.presses == 100000:
+            pass
+        pass
     return button_presses
 
 def parse_input(input_file):
