@@ -169,7 +169,8 @@ def solve_pt2():
         chains[list(out)[0]] = chain
         pass
     pass
-    for k,v in chains.items():
+    for i in range(100000):
+        system.press_button()
 
     reqs = []
     for sublist in turn_ons:
@@ -179,14 +180,11 @@ def solve_pt2():
             if (item-yint) % delta != 0:
                 raise Exception()
         reqs.append((yint, delta))
-    
-    n = 3906-66
-    inc = 3906
-    while True:
-        n += inc
-        if check_n3(n):
-            break
-    pass
+
+    print("Solve:")
+    for req in reqs:
+        (yint, delta) = req
+        print(f"n % {delta} = {yint}")
     
     return 0
 
