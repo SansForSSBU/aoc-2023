@@ -52,35 +52,32 @@ class System():
     def __init__(self, modules):
         self.modules = modules
         self.pulse_queue = []
-
-def send_pulse(module_name, pulse):
-    global system
-    module = [m for m in system.modules if m.name == module_name][0]
-    module.process_pulse(pulse)
-
-def press_button():
-    global system
-    highs = 0
-    lows = 0
-    system.pulse_queue.append(Pulse(False, "broadcaster", "button"))
-    while len(system.pulse_queue) > 0:
-        pulse = system.pulse_queue.pop()
-        if pulse.pulse == True:
-            highs += 1
-        elif pulse.pulse == False:
-            lows += 1
-        else:
-            print("pulse.pulse is not high or low?!")
-        pulse.invoke()
-        pass
-
-    return highs,lows
+    
+    def press_button(self):
+        highs = 0
+        lows = 0
+        self.pulse_queue.append(Pulse(False, "broadcaster", "button"))
+        while len(system.pulse_queue) > 0:
+            pulse = system.pulse_queue.pop()
+            if pulse.pulse == True:
+                highs += 1
+            elif pulse.pulse == False:
+                lows += 1
+            else:
+                raise ValueError()
+            pulse.invoke()
+        return highs,lows
+    
+    def send_pulse(self, module_name, pulse):
+        module = [m for m in self.modules if m.name == module_name][0]
+        module.process_pulse(pulse)
 
 def solve_pt1():
+    global system
     highs = 0
     lows = 0
     for i in range(1000):
-        h,l = press_button()
+        h,l = system.press_button()
         highs += h
         lows += l
     return highs*lows
