@@ -1,2 +1,4 @@
 requests
-pytestpulp
+pytest
+pulp
+numpy
