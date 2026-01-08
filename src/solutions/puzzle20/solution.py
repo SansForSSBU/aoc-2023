@@ -116,33 +116,6 @@ def solve_pt1():
         lows += l
     return highs*lows
 
-def check_n2(n):
-    if n % 3847 > 1:
-        return False
-    if (n+66) % 3906 > 1:
-        return False
-    return True
-
-def check_n3(n):
-    #if n % 3847 != 0:
-    #    return False
-    if (n+66) % 3906 > 1:
-        return False
-    if (n+3440) % 3658 > 1:
-        return False
-    return True
-
-def check_n4(n):
-    if n % 3847 <= 1:
-        return False
-    if (n+66) % 3906 > 1:
-        return False
-    if (n+3440) % 3658 > 1:
-        return False
-    if (n+3278) % 3550 > 1:
-        return False
-    return True
-
 def solve_pt2():
     global system    
     special_switches = [(system.special_ons[k], system.special_offs[k]) for k in system.special_ons.keys()]
@@ -156,7 +129,6 @@ def solve_pt2():
         yint = sublist[0] % delta
         reqs.append((yint, delta))
 
-    print("Solve:")
     for req in reqs:
         (yint, delta) = req
         if yint != 0:
