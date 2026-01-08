@@ -1,39 +1,41 @@
 from enum import Enum
 
-energised_squares = {}
-def main(input_file):
-    lines = input_file.split("\n")[:-1]
+lines = []
 
-    class D(Enum):
-        NORTH = 0
-        EAST = 1
-        SOUTH = 2
-        WEST = 3
+class D(Enum):
+    NORTH = 0
+    EAST = 1
+    SOUTH = 2
+    WEST = 3
 
-    mappings = {
-        ".": {},
-        "/": {
-            D.NORTH: [D.EAST],
-            D.EAST: [D.NORTH],
-            D.SOUTH: [D.WEST],
-            D.WEST: [D.SOUTH]
+mappings = {
+    ".": {},
+    "/": {
+        D.NORTH: [D.EAST],
+        D.EAST: [D.NORTH],
+        D.SOUTH: [D.WEST],
+        D.WEST: [D.SOUTH]
+    },
+    "\\": {
+        D.NORTH: [D.WEST],
+        D.EAST: [D.SOUTH],
+        D.SOUTH: [D.EAST],
+        D.WEST: [D.NORTH]
+    },
+    "|": {
+        D.EAST: [D.NORTH, D.SOUTH],
+        D.WEST: [D.NORTH, D.SOUTH]
         },
-        "\\": {
-            D.NORTH: [D.WEST],
-            D.EAST: [D.SOUTH],
-            D.SOUTH: [D.EAST],
-            D.WEST: [D.NORTH]
-        },
-        "|": {
-            D.EAST: [D.NORTH, D.SOUTH],
-            D.WEST: [D.NORTH, D.SOUTH]
-            },
-        "-": {
-            D.NORTH: [D.EAST, D.WEST],
-            D.SOUTH: [D.EAST, D.WEST]
-        }
+    "-": {
+        D.NORTH: [D.EAST, D.WEST],
+        D.SOUTH: [D.EAST, D.WEST]
     }
+}
 
+energised_squares = {}
+
+def main(input_text):
+    lines = input_text.split("\n")
     def get_tile(map, coords):
         if coords[0] < 0 or coords[0] >= len(map[0]) or coords[1] < 0 or coords[1] >= len(map[1]):
             return None
@@ -78,6 +80,7 @@ def main(input_file):
 
     def solve_pt1(starting_beam):
         global energised_squares
+        energised_squares = {}
         beams = [starting_beam]
         while len(beams) > 0:
             beam = beams[0]
@@ -95,7 +98,6 @@ def main(input_file):
             best = max(solve_pt1([(x, 0), D.SOUTH]), best)
             best = max(solve_pt1([(x, len(lines)-1), D.NORTH]), best)
         return best
-
     pt1_ans = solve_pt1([(0, 0), D.EAST])
     pt2_ans = solve_pt2()
     return (pt1_ans, pt2_ans)
