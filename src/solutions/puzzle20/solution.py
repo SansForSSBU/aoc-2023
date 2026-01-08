@@ -86,15 +86,12 @@ def solve_pt2():
     button_presses = 0
     return button_presses
 
-system = None
-def main(input_file):
-    global system
+def parse_input(input_file):
     modules = {}
     lines = input_file.split("\n")[:-1]
     for line in lines:
         e = line.split(" -> ")
         module_connections = e[1].split(", ")
-
         module_type = None
         module_name = None
         if e[0] == "broadcaster":
@@ -113,7 +110,12 @@ def main(input_file):
                     mod1.inputs[mod2.name] = False
 
     system = System(modules)
+    return system
 
+system = None
+def main(input_file):
+    global system
+    system = parse_input(input_file)
     pt1_ans = solve_pt1()
     pt2_ans = solve_pt2()
     
