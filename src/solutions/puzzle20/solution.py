@@ -1,5 +1,6 @@
 from math import lcm
 from copy import deepcopy
+import pulp
 
 class Pulse:
     def __init__(self, pulse, receiver, sender):
@@ -131,25 +132,32 @@ def check_n4(n):
 
 def solve_pt2():
     global system
-    n = 0
-    increment = 3847
-    fn = 0
-    fns = [check_n2, check_n3, check_n4]
-    while fn < 3:
-        n += increment
-        if fns[fn](n):
-            increment = n
-            fn += 1
-    
-    return n
-    # n % 3847 = 0
-    # 
     while True:
         system.press_button()
         if system.presses == 100000:
-            pass
-        pass
-    return button_presses
+            break
+    
+    things = list(system.specials.values())
+    reqs = []
+    for sublist in things:
+        delta = sublist[2] - sublist[1]
+        yint = sublist[0] % delta
+        reqs.append((yint, delta))
+    pass
+    problem = pulp.LpProblem("find_n", pulp.LpMinimize)
+    n = pulp.LpVariable("n", lowBound=1, cat="Integer")
+    a = pulp.LpVariable("a", lowBound=1, cat="Integer")
+    b = pulp.LpVariable("b", lowBound=1, cat="Integer")
+    c = pulp.LpVariable("c", lowBound=1, cat="Integer")
+    d = pulp.LpVariable("d", lowBound=1, cat="Integer")
+
+    lp_vars = [a,b,c,d]
+    problem += n
+    for idx, req in enumerate(reqs):
+        (yint, delta) = req
+        problem += (n+1) - yint == lp_vars[idx] * delta
+    problem.solve()
+    return int(pulp.value(n))
 
 def parse_input(input_file):
     modules = {}
