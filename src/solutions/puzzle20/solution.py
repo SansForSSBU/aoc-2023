@@ -16,8 +16,6 @@ class Pulse:
         if self.receiver in system.special_ons.keys():
             if self.pulse == False:
                 system.special_ons[self.receiver].append(system.presses)
-            elif self.pulse == True:
-                system.special_offs[self.receiver].append(system.presses)
 
 class Module:
     def __init__(self, code, name, connections):
@@ -66,21 +64,9 @@ class System():
         self.presses = 0
         self.modules = modules
         self.pulse_queue = []
-        self.special_ons = {
-            "xc": [],
-            "th": [],
-            "pd": [],
-            "bp": []
-        }
-        self.special_offs = {
-            "xc": [],
-            "th": [],
-            "pd": [],
-            "bp": []
-        }
-        self.states = {
-
-        }
+        self.special_ons = dict([(x, None) for x in self.get_upstreams(self.get_upstreams("rx")[0])])
+        for k in self.special_ons.keys():
+            self.special_ons[k] = []
     
     def press_button(self):
         self.presses += 1
@@ -96,7 +82,6 @@ class System():
             else:
                 raise ValueError()
             pulse.invoke()
-        self.states[self.presses] = self.modules["zh"].inputs
         return highs,lows
     
     def send_pulse(self, module_name, pulse):
@@ -104,7 +89,7 @@ class System():
         module.process_pulse(pulse)
 
     def get_upstreams(self, module_name):
-        return [module.name for module in system.modules.values() if module_name in module.outputs]
+        return [module.name for module in self.modules.values() if module_name in module.outputs]
 
 def solve_pt1():
     global system
@@ -118,8 +103,7 @@ def solve_pt1():
 
 def solve_pt2():
     global system    
-    special_switches = [(system.special_ons[k], system.special_offs[k]) for k in system.special_ons.keys()]
-    turn_ons = [s[0] for s in special_switches]
+    turn_ons = [system.special_ons[k] for k in system.special_ons.keys()]
     for i in range(100000):
         system.press_button()
 
