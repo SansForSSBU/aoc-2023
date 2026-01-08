@@ -1,5 +1,6 @@
 lines = []
 def main(input_file):
+    global lines
     lines = input_file.split("\n")[:-1]
 
     lines = [[int(val) for val in line.split(" ")] for line in lines]
@@ -31,6 +32,7 @@ def main(input_file):
         return line_diffs[0][-1]
 
     def solve_pt1():
+        global lines
         result = 0
         for line in lines:
             line_diffs = get_all_differences(line)
