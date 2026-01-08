@@ -47,6 +47,11 @@ class Module:
             all_pulses_high_pulses = list(self.inputs.values()).count(True) == len(self.inputs.values())
             output = not all_pulses_high_pulses
             self.send_bit(output)
+    
+    def get_upstreams(self):
+        global system
+        return system.get_upstreams(self.name)
+        
 
 class System():
     def __init__(self, modules):
@@ -72,6 +77,9 @@ class System():
         module = [m for m in self.modules if m.name == module_name][0]
         module.process_pulse(pulse)
 
+    def get_upstreams(self, module_name):
+        return [module.name for module in system.modules.values() if module_name in module.outputs]
+
 def solve_pt1():
     global system
     highs = 0
@@ -84,6 +92,7 @@ def solve_pt1():
 
 def solve_pt2():
     button_presses = 0
+    pass
     return button_presses
 
 def parse_input(input_file):
