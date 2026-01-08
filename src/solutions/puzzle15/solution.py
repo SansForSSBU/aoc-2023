@@ -2,7 +2,7 @@
 non_label_strings = ["=", "-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 lines = []
 def main(input_file):
-    lines = input_file.split(",")
+    lines = input_file[:-1].split(",")
 
 
 
