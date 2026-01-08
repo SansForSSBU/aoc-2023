@@ -66,10 +66,10 @@ def get_occupancy(grid, farmer_pos, n_steps):
     for i in range(n_steps):
         next_to_check = set()
         for pos in to_check:
-            occupancy.set_coords(pos, 1)
             for adj in grid.get_adjacents(pos):
                 if grid.get_coords(adj) == 0:
                     next_to_check.add(adj)
+                    occupancy.set_coords(adj, 1)
         to_check = list(next_to_check)
     return occupancy
 
@@ -114,6 +114,6 @@ def main(input_file):
             break
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
-    pt1_ans = solve_pt1(grid, farmer_pos, 65)
+    pt1_ans = solve_pt1(grid, farmer_pos, 64)
     pt2_ans = solve_pt2(grid, farmer_pos)
     return (pt1_ans, pt2_ans)
