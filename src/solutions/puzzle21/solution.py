@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class Grid():
     def __init__(self, grid):
@@ -6,9 +7,9 @@ class Grid():
 
     def is_in_grid(self, pos):
         (x, y) = pos
-        if x > len(self.grid[0]) or x < 0:
+        if x >= len(self.grid[0]) or x < 0:
             return False
-        if y > len(self.grid) or y < 0:
+        if y >= len(self.grid) or y < 0:
             return False
         return True
     
@@ -38,11 +39,19 @@ class Grid():
             return -1
         return self.grid[y][x]
     
+    def set_coords(self, pos, val):
+        (x, y) = pos
+        if not self.is_in_grid(pos):
+            return False
+        self.grid[y][x] = val
+    
     def get_adjacents(self, pos):
         (x, y) = pos
         adds = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         for add in adds:
-            yield (x + add[0], y + add[1])
+            extra_pos = (x + add[0], y + add[1])
+            if self.is_in_grid(extra_pos) and not self.is_rock(extra_pos):
+                yield extra_pos
 
     def is_rock(self, pos):
         return self.get_coords(pos) == 1
@@ -50,39 +59,49 @@ class Grid():
 def add_positions(a,b):
     return (a[0]+b[0], a[1]+b[1])
 
-def solve_pt1(grid, farmer_pos):
-    positions = [farmer_pos]
-    for i in range(64):
-        next_positions = set([])
-        for position in positions:
-            next_positions.update(grid.get_adjacents(position))
-        positions = next_positions
-        positions = list(filter(grid.is_in_grid, positions))
-        positions = list(filter(lambda x: not grid.is_rock(x), positions))
-    return len(list(positions))
+def get_occupancy(grid, farmer_pos, n_steps):
+    occupancy = Grid(np.zeros_like(grid.grid))
+    occupancy.set_coords(farmer_pos, 1)
+    to_check = [farmer_pos]
+    for i in range(n_steps):
+        next_to_check = set()
+        for pos in to_check:
+            occupancy.set_coords(pos, 1)
+            for adj in grid.get_adjacents(pos):
+                if grid.get_coords(adj) == 0:
+                    next_to_check.add(adj)
+        to_check = list(next_to_check)
+    return occupancy
+
+def solve_pt1(grid, farmer_pos, n_steps):
+    occupancy = get_occupancy(grid, farmer_pos, n_steps)
+    ans = 0
+    for x in range(len(occupancy.grid[0])):
+        for y in range(len(occupancy.grid)):
+            if (x+y) % 2 == 0:
+                if occupancy.get_coords((x,y)) == 1:
+                    ans += 1
+    return ans
+    pass
+
+def n_grids(n_field_steps):
+    even_fields = 1
+    odd_fields = 0
+    for n in range(1,n_field_steps):
+        if n % 2 == 1:
+            odd_fields += n * 4
+        else:
+            even_fields += n * 4
+
+    return (even_fields, odd_fields)
+    #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
 def solve_pt2(grid, farmer_pos):
-    positions = {
-        farmer_pos: set([(0, 0)])
-    }
-    steps = 26501365
-    for i in range(steps):
-        next_positions = {}
-        for pos,PUs in positions.items():
-            adjacents = grid.get_adjacents(pos)
-            for adj in adjacents:
-                pu_offset = grid.get_pu_offset(adj)
-                contributions = [add_positions(pu, pu_offset) for pu in PUs]
-                existing = next_positions.get(adj, None)
-                if existing == None:
-                    existing = set([])
-                existing.update(contributions)
-                next_positions[adj] = existing
-                pass
-        positions = next_positions
-        if i % 1000 == 0:
-            print(i)
-    return sum(sum(len(v)) for v in positions.values())
+    # First, just think about the spaces that can be reached.
+    n_steps = 26501365
+    n_field_steps = math.floor(n_steps / 131)
+    (even_fields, odd_fields) = n_grids(n_field_steps)
+    return 0
                 
 
 
@@ -95,6 +114,6 @@ def main(input_file):
             break
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
-    pt1_ans = solve_pt1(grid, farmer_pos)
-    pt2_ans = 0#solve_pt2(grid, farmer_pos)
+    pt1_ans = solve_pt1(grid, farmer_pos, 65)
+    pt2_ans = solve_pt2(grid, farmer_pos)
     return (pt1_ans, pt2_ans)
