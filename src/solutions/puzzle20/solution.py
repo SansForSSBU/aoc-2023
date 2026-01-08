@@ -184,7 +184,8 @@ def solve_pt2():
     print("Solve:")
     for req in reqs:
         (yint, delta) = req
-        print(f"n % {delta} = {yint}")
+        diff = (delta - yint) % delta
+        print(f"(n - {diff}) % {delta} = 0")
     
     return 0
 
