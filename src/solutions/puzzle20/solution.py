@@ -7,15 +7,9 @@ class Pulse:
         self.sender = sender
     
     def invoke(self):
-        global rx_invoked
-        if modules.get(self.receiver, None) is not None:
-            modules[self.receiver].process_pulse(self)
-        else:
-            if self.receiver == "rx":
-                if self.pulse == False:
-                    rx_invoked = True
-            pass # Good place for a break... point.
-
+        global system
+        if system.modules.get(self.receiver, None) is not None:
+            system.modules[self.receiver].process_pulse(self)
 
 class Module:
     def __init__(self, code, name, connections):
@@ -34,8 +28,9 @@ class Module:
         return ret
 
     def send_bit(self, bit):
+        global system
         for conn in self.outputs:
-            pulse_queue.append(Pulse(bit, conn, self.name))
+            system.pulse_queue.append(Pulse(bit, conn, self.name))
 
     def process_pulse(self, pulse):
         if self.type == "b":
@@ -53,14 +48,51 @@ class Module:
             output = not all_pulses_high_pulses
             self.send_bit(output)
 
+class System():
+    def __init__(self, modules):
+        self.modules = modules
+        self.pulse_queue = []
+
 def send_pulse(module_name, pulse):
-    global modules
-    module = [m for m in modules if m.name == module_name][0]
+    global system
+    module = [m for m in system.modules if m.name == module_name][0]
     module.process_pulse(pulse)
 
-modules = {}
-pulse_queue = []
+def press_button():
+    global system
+    highs = 0
+    lows = 0
+    system.pulse_queue.append(Pulse(False, "broadcaster", "button"))
+    while len(system.pulse_queue) > 0:
+        pulse = system.pulse_queue.pop()
+        if pulse.pulse == True:
+            highs += 1
+        elif pulse.pulse == False:
+            lows += 1
+        else:
+            print("pulse.pulse is not high or low?!")
+        pulse.invoke()
+        pass
+
+    return highs,lows
+
+def solve_pt1():
+    highs = 0
+    lows = 0
+    for i in range(1000):
+        h,l = press_button()
+        highs += h
+        lows += l
+    return highs*lows
+
+def solve_pt2():
+    button_presses = 0
+    return button_presses
+
+system = None
 def main(input_file):
+    global system
+    modules = {}
     lines = input_file.split("\n")[:-1]
     for line in lines:
         e = line.split(" -> ")
@@ -83,35 +115,7 @@ def main(input_file):
                 if mod1.name in mod2.outputs:
                     mod1.inputs[mod2.name] = False
 
-    def press_button():
-        highs = 0
-        lows = 0
-        pulse_queue.append(Pulse(False, "broadcaster", "button"))
-        while len(pulse_queue) > 0:
-            pulse = pulse_queue.pop()
-            if pulse.pulse == True:
-                highs += 1
-            elif pulse.pulse == False:
-                lows += 1
-            else:
-                print("pulse.pulse is not high or low?!")
-            pulse.invoke()
-            pass
-
-        return highs,lows
-
-    def solve_pt1():
-        highs = 0
-        lows = 0
-        for i in range(1000):
-            h,l = press_button()
-            highs += h
-            lows += l
-        return highs*lows
-
-    def solve_pt2():
-        button_presses = 0
-        return button_presses
+    system = System(modules)
 
     pt1_ans = solve_pt1()
     pt2_ans = solve_pt2()
