@@ -38,7 +38,7 @@ class Module:
     def send_bit(self, bit):
         global system
         for conn in self.outputs:
-            system.pulse_queue.append(Pulse(bit, conn, self.name))
+            system.pulse_queue.insert(0, Pulse(bit, conn, self.name))
 
     def process_pulse(self, pulse):
         if self.type == "b":
@@ -187,7 +187,7 @@ def solve_pt2():
         diff = (delta - yint) % delta
         print(f"(n - {diff}) % {delta} = 0")
     
-    return 0
+    return lcm(*[req[1] for req in reqs])
 
 def parse_input(input_file):
     modules = {}
