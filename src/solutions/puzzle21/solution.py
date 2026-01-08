@@ -44,6 +44,9 @@ class Grid():
         for add in adds:
             yield (x + add[0], y + add[1])
 
+    def is_rock(self, pos):
+        return self.get_coords(pos) == 1
+
 def add_positions(a,b):
     return (a[0]+b[0], a[1]+b[1])
 
@@ -53,8 +56,10 @@ def solve_pt1(grid, farmer_pos):
         next_positions = set([])
         for position in positions:
             next_positions.update(grid.get_adjacents(position))
-        positions = [pos for pos in list(next_positions) if grid.get_coords(pos) == 0]  
-    return len(positions)
+        positions = next_positions
+        positions = list(filter(grid.is_in_grid, positions))
+        positions = list(filter(lambda x: not grid.is_rock(x), positions))
+    return len(list(positions))
 
 def solve_pt2(grid, farmer_pos):
     positions = {
@@ -91,5 +96,5 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos)
-    pt2_ans = solve_pt2(grid, farmer_pos)
+    pt2_ans = 0#solve_pt2(grid, farmer_pos)
     return (pt1_ans, pt2_ans)
