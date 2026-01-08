@@ -142,6 +142,9 @@ def solve_pt2():
     for sublist in things:
         delta = sublist[2] - sublist[1]
         yint = sublist[0] % delta
+        for item in sublist:
+            if (item-yint) % delta != 0:
+                raise Exception()
         reqs.append((yint, delta))
     pass
     problem = pulp.LpProblem("find_n", pulp.LpMinimize)
@@ -155,7 +158,7 @@ def solve_pt2():
     problem += n
     for idx, req in enumerate(reqs):
         (yint, delta) = req
-        problem += (n+1) - yint == lp_vars[idx] * delta
+        problem += n - yint == lp_vars[idx] * delta
     problem.solve()
     return int(pulp.value(n))
 
