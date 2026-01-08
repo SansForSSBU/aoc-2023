@@ -13,11 +13,9 @@ class Pulse:
         if system.modules.get(self.receiver, None) is not None:
             system.modules[self.receiver].process_pulse(self)
         
-        if self.receiver in system.special_ons.keys():
-            if self.pulse == False:
-                system.special_ons[self.receiver].append(system.presses)
-            elif self.pulse == True:
-                system.special_offs[self.receiver].append(system.presses)
+        if self.sender in system.specials.keys():
+            if self.pulse == True:
+                system.specials[self.sender].append(system.presses)
 
 class Module:
     def __init__(self, code, name, connections):
@@ -66,13 +64,7 @@ class System():
         self.presses = 0
         self.modules = modules
         self.pulse_queue = []
-        self.special_ons = {
-            "xc": [],
-            "th": [],
-            "pd": [],
-            "bp": []
-        }
-        self.special_offs = {
+        self.specials = {
             "xc": [],
             "th": [],
             "pd": [],
@@ -124,7 +116,7 @@ def check_n2(n):
     return True
 
 def check_n3(n):
-    #if n % 3847 != 0:
+    #if n % 3847 > 1:
     #    return False
     if (n+66) % 3906 > 1:
         return False
@@ -133,7 +125,7 @@ def check_n3(n):
     return True
 
 def check_n4(n):
-    if n % 3847 <= 1:
+    if n % 3847 > 1:
         return False
     if (n+66) % 3906 > 1:
         return False
@@ -145,30 +137,7 @@ def check_n4(n):
 
 def solve_pt2():
     global system    
-    special_switches = [(system.special_ons[k], system.special_offs[k]) for k in system.special_ons.keys()]
-    turn_ons = [s[0] for s in special_switches]
-    turn_offs = [s[1] for s in special_switches]
-    flipflops = [module for module in system.modules.values() if module.type == "%"]
-    specials = ["ps", "kh", "mk", "ml"]
-    inputs = ["sr", "gd", "mg", "hf"]
-    chains = {}
-    for obj in inputs:
-        chain = [obj]
-        out = set()
-        i = 0
-        while i < len(chain):
-            for output in system.modules[chain[i]].outputs:
-                module = system.modules[output]
-                if module.type == "%":
-                    chain.append(module.name)
-                if module.type == "&":
-                    out.add(module.name)
-
-            i += 1
-        assert len(out) == 1
-        chains[list(out)[0]] = chain
-        pass
-    pass
+    turn_ons = system.specials.values()
     for i in range(100000):
         system.press_button()
 
@@ -182,11 +151,25 @@ def solve_pt2():
         reqs.append((yint, delta))
 
     print("Solve:")
-    for req in reqs:
+    letters = "abcd"
+    for idx, req in enumerate(reqs):
         (yint, delta) = req
         diff = (delta - yint) % delta
-        print(f"(n - {diff}) % {delta} = 0")
+        print(f"n - {diff} = {delta}{letters[idx]}")
     
+    problem = pulp.LpProblem("Find_n", pulp.LpMinimize)
+    n = pulp.LpVariable("n", lowBound=0, cat=pulp.LpInteger)
+    a = pulp.LpVariable("a", lowBound=0, cat=pulp.LpInteger)
+    b = pulp.LpVariable("b", lowBound=0, cat=pulp.LpInteger)
+    c = pulp.LpVariable("c", lowBound=0, cat=pulp.LpInteger)
+    d = pulp.LpVariable("d", lowBound=0, cat=pulp.LpInteger)
+    problem += (3847*a) - (3906*b + 66) <= 1
+    problem += (3847*a) - (3906*b + 66) >= 0
+    problem += (3847*a) - (3658*c + 3440) <= 1
+    problem += (3847*a) - (3658*c + 3440) >= 0
+    problem += (3847*a) - (3550*d + 3278) <= 1
+    problem += (3847*a) - (3550*d + 3278) >= 0
+    problem.solve()
     return 0
 
 def parse_input(input_file):
