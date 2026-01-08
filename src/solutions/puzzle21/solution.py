@@ -4,11 +4,17 @@ class Grid():
     def __init__(self, grid):
         self.grid = grid
 
-    def get_coords(self, pos):
+    def is_in_grid(self, pos):
         (x, y) = pos
         if x > len(self.grid[0]) or x < 0:
-            return -1
+            return False
         if y > len(self.grid) or y < 0:
+            return False
+        return True
+
+    def get_coords(self, pos):
+        (x, y) = pos
+        if not self.is_in_grid(pos):
             return -1
         return self.grid[y][x]
     
