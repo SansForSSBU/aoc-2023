@@ -147,45 +147,20 @@ def solve_pt2():
     global system    
     special_switches = [(system.special_ons[k], system.special_offs[k]) for k in system.special_ons.keys()]
     turn_ons = [s[0] for s in special_switches]
-    turn_offs = [s[1] for s in special_switches]
-    flipflops = [module for module in system.modules.values() if module.type == "%"]
-    specials = ["ps", "kh", "mk", "ml"]
-    inputs = ["sr", "gd", "mg", "hf"]
-    chains = {}
-    for obj in inputs:
-        chain = [obj]
-        out = set()
-        i = 0
-        while i < len(chain):
-            for output in system.modules[chain[i]].outputs:
-                module = system.modules[output]
-                if module.type == "%":
-                    chain.append(module.name)
-                if module.type == "&":
-                    out.add(module.name)
-
-            i += 1
-        assert len(out) == 1
-        chains[list(out)[0]] = chain
-        pass
-    pass
     for i in range(100000):
         system.press_button()
 
     reqs = []
     for sublist in turn_ons:
-        delta = sublist[2] - sublist[1]
+        delta = sublist[1] - sublist[0]
         yint = sublist[0] % delta
-        for item in sublist:
-            if (item-yint) % delta != 0:
-                raise Exception()
         reqs.append((yint, delta))
 
     print("Solve:")
     for req in reqs:
         (yint, delta) = req
-        diff = (delta - yint) % delta
-        print(f"(n - {diff}) % {delta} = 0")
+        if yint != 0:
+            raise Exception("Y-intercept is expected to be 0")
     
     return lcm(*[req[1] for req in reqs])
 
