@@ -85,28 +85,51 @@ def get_occupancy(grid, farmer_pos, n_steps):
 
 def solve_pt1(grid, farmer_pos, n_steps):
     (even_occupancy, odd_occupancy) = get_occupancy(grid, farmer_pos, n_steps)
-    if sum(farmer_pos) % 2 == 0:
+    if (sum(farmer_pos)+n_steps) % 2 == 0:
         return even_occupancy
     else:
         return odd_occupancy
 
-def n_grids(n_field_steps):
+def n_grids(n_field_steps, occupancies, n_steps):
+    ans = 0
     even_fields = 1
     odd_fields = 0
     for n in range(1,n_field_steps):
-        if n % 2 == 1:
-            odd_fields += n * 4
-        else:
-            even_fields += n * 4
-
-    return (even_fields, odd_fields)
+        idx = (n+n_steps) % 2
+        ans += 4 * n * occupancies["C"][idx]
+    
+    n = n_field_steps
+    idx = (n+n_steps) % 2
+    ans += occupancies["N"][idx] + occupancies["E"][idx] + occupancies["S"][idx] + occupancies["W"][idx]
+    ans += (occupancies["NE"][idx] + occupancies["SE"][idx] + occupancies["SW"][idx] + occupancies["NW"][idx]) * (n-4)
+    return ans
     #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
 def solve_pt2(grid, farmer_pos):
     # First, just think about the spaces that can be reached.
     n_steps = 26501365
     n_field_steps = math.floor(n_steps / 131)
-    (even_fields, odd_fields) = n_grids(n_field_steps)
+    # Positions: Key is the direction you come from.
+    positions = {
+        "N": (65, 0),
+        "E": (0, 65),
+        "S": (65, 130),
+        "W": (130, 65),
+        "NE": (0, 0),
+        "SE": (0, 130),
+        "SW": (130, 130),
+        "NW": (130, 0),
+    }
+    occupancies = {}
+    for k,pos in positions.items():
+        if len(k) == 1:
+            occupancies[k] = get_occupancy(grid, pos, 130)
+        else:
+            occupancies[k] = get_occupancy(grid, pos, 130-66)
+    occupancies["C"] = get_occupancy(grid, farmer_pos, 200)
+
+    return n_grids(n_field_steps, occupancies, n_steps)
+    #(even_fields, odd_fields) = n_grids(n_field_steps)
     return 0
                 
 
