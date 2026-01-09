@@ -59,6 +59,19 @@ class Grid():
 def add_positions(a,b):
     return (a[0]+b[0], a[1]+b[1])
 
+def count_occ(grid):
+    grid = Grid(grid)
+    even_occupancy = 0
+    odd_occupancy = 0
+    for x in range(len(grid.grid[0])):
+        for y in range(len(grid.grid)):
+            if grid.get_coords((x,y)) == 1:
+                if sum([x,y]) % 2 == 0:
+                    even_occupancy += 1
+                else:
+                    odd_occupancy += 1
+    return (even_occupancy, odd_occupancy)
+
 def get_occupancy(grid, farmer_pos, n_steps):
     occupancy = Grid(np.zeros_like(grid.grid))
     occupancy.set_coords(farmer_pos, 1)
@@ -72,19 +85,11 @@ def get_occupancy(grid, farmer_pos, n_steps):
                     occupancy.set_coords(adj, 1)
         to_check = list(next_to_check)
 
-    even_occupancy = 0
-    odd_occupancy = 0
-    for x in range(len(occupancy.grid[0])):
-        for y in range(len(occupancy.grid)):
-            if occupancy.get_coords((x,y)) == 1:
-                if sum([x,y]) % 2 == 0:
-                    even_occupancy += 1
-                else:
-                    odd_occupancy += 1
-    return even_occupancy, odd_occupancy
+    (even_occupancy, odd_occupancy) = count_occ(occupancy.grid)
+    return even_occupancy, odd_occupancy, occupancy
 
 def solve_pt1(grid, farmer_pos, n_steps):
-    (even_occupancy, odd_occupancy) = get_occupancy(grid, farmer_pos, n_steps)
+    (even_occupancy, odd_occupancy, _) = get_occupancy(grid, farmer_pos, n_steps)
     if (sum(farmer_pos)+n_steps) % 2 == 0:
         return even_occupancy
     else:
@@ -106,39 +111,69 @@ def n_grids(n_field_steps, occupancies, n_steps):
     return ans
     #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
+def detile(tiled, n=3):
+    h = tiled.shape[0] // n
+    w = tiled.shape[1] // n
+    return (
+        tiled
+        .reshape(n, h, n, w)
+        .swapaxes(1, 2)
+        .reshape(n*n, h, w)
+    )
+
+def swap(tup):
+    return (tup[1], tup[0])
+
 def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637531791816968 too low
     # 637525510428520 too low
     # 637531813260100 too low
+    # 637538093084305 wrong
     # First, just think about the spaces that can be reached.
     n_field_steps = math.floor(n_steps / 131)
+    steps_from_centre = n_steps % len(grid.grid[0])
     # Positions: Key is the direction you come from.
-    x,y = farmer_pos
-    max_x = len(grid.grid[0])-1
-    max_y = len(grid.grid)-1
-    positions = {
-        "N": (x, 0),
-        "E": (0, y),
-        "S": (x, max_y),
-        "W": (max_x, y),
-        "NE": (0, 0),
-        "SE": (0, max_y),
-        "SW": (max_x, max_y),
-        "NW": (max_x, 0),
+    big_grid = Grid(np.tile(grid.grid, (3,3)))
+    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (131, 131)), n_steps = steps_from_centre+len(grid.grid[0]))
+    detiled = detile(occ.grid)
+    things = {
+        "NW": detiled[0],
+        "N": detiled[1],
+        "NE": detiled[2],
+        "W": detiled[3],
+        "C": detiled[4],
+        "E": detiled[5],
+        "SW": detiled[6],
+        "S": detiled[7],
+        "SE": detiled[8]
     }
-    occupancies = {}
-    for k,pos in positions.items():
-        if len(k) == 1:
-            occupancies[k] = get_occupancy(grid, pos, 130)
-        else:
-            occupancies[k] = get_occupancy(grid, pos, 130-66)
-    a = get_occupancy(grid, farmer_pos, 130)
-    b = get_occupancy(grid, farmer_pos, 131)
-    occupancies["C"] = get_occupancy(grid, farmer_pos, 200)
+    for k in things.keys():
+        things[k] = count_occ(things[k])
+    
+    things["N"] = swap(things["N"])
+    things["E"] = swap(things["E"])
+    things["S"] = swap(things["S"])
+    things["W"] = swap(things["W"])
 
-    return n_grids(n_field_steps, occupancies, n_steps)
-    #(even_fields, odd_fields) = n_grids(n_field_steps)
-    return 0
+    ans = 0
+    ans += things["N"][0]
+    ans += things["E"][0]
+    ans += things["S"][0]
+    ans += things["W"][0]
+    ans += things["NE"][1] * (n_field_steps + 1)
+    ans += things["NW"][1] * (n_field_steps + 1)
+    ans += things["SE"][1] * (n_field_steps + 1)
+    ans += things["SW"][1] * (n_field_steps + 1)
+
+    # C (odd)
+    # even/odd are in terms of steps from the origin
+    state = 1
+    central = things["C"]
+    ans += central[state]
+    for i in range(1,n_field_steps+1):
+        state = (state + 1) % 2
+        ans += central[state]*(i*4)
+    return ans
                 
 
 
