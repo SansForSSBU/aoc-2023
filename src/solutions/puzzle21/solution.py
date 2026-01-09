@@ -76,17 +76,19 @@ def get_occupancy(grid, farmer_pos, n_steps):
     odd_occupancy = 0
     for x in range(len(occupancy.grid[0])):
         for y in range(len(occupancy.grid)):
-            if sum(add_positions(farmer_pos, (x,y))) % 2 == 0:
-                if occupancy.get_coords((x,y)) == 1:
-                    odd_occupancy += 1
-                else:
+            if occupancy.get_coords((x,y)) == 1:
+                if sum([x,y]) % 2 == 0:
                     even_occupancy += 1
+                else:
+                    odd_occupancy += 1
     return even_occupancy, odd_occupancy
 
 def solve_pt1(grid, farmer_pos, n_steps):
     (even_occupancy, odd_occupancy) = get_occupancy(grid, farmer_pos, n_steps)
-    return odd_occupancy
-    pass
+    if sum(farmer_pos) % 2 == 0:
+        return even_occupancy
+    else:
+        return odd_occupancy
 
 def n_grids(n_field_steps):
     even_fields = 1
