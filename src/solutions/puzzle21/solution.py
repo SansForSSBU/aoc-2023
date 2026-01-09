@@ -106,23 +106,25 @@ def n_grids(n_field_steps, occupancies, n_steps):
     return ans
     #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
-def solve_pt2(grid, farmer_pos):
+def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637531791816968 too low
     # 637525510428520 too low
     # 637531813260100 too low
     # First, just think about the spaces that can be reached.
-    n_steps = 26501365
     n_field_steps = math.floor(n_steps / 131)
     # Positions: Key is the direction you come from.
+    x,y = farmer_pos
+    max_x = len(grid.grid[0])-1
+    max_y = len(grid.grid)-1
     positions = {
-        "N": (65, 0),
-        "E": (0, 65),
-        "S": (65, 130),
-        "W": (130, 65),
+        "N": (x, 0),
+        "E": (0, y),
+        "S": (x, max_y),
+        "W": (max_x, y),
         "NE": (0, 0),
-        "SE": (0, 130),
-        "SW": (130, 130),
-        "NW": (130, 0),
+        "SE": (0, max_y),
+        "SW": (max_x, max_y),
+        "NW": (max_x, 0),
     }
     occupancies = {}
     for k,pos in positions.items():
@@ -130,6 +132,8 @@ def solve_pt2(grid, farmer_pos):
             occupancies[k] = get_occupancy(grid, pos, 130)
         else:
             occupancies[k] = get_occupancy(grid, pos, 130-66)
+    a = get_occupancy(grid, farmer_pos, 130)
+    b = get_occupancy(grid, farmer_pos, 131)
     occupancies["C"] = get_occupancy(grid, farmer_pos, 200)
 
     return n_grids(n_field_steps, occupancies, n_steps)
