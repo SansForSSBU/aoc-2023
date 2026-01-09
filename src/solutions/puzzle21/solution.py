@@ -106,6 +106,7 @@ def n_grids(n_field_steps, occupancies, n_steps):
     #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
 def solve_pt2(grid, farmer_pos):
+    # 637531791816968 too high
     # First, just think about the spaces that can be reached.
     n_steps = 26501365
     n_field_steps = math.floor(n_steps / 131)
