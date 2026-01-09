@@ -91,6 +91,7 @@ def solve_pt1(grid, farmer_pos, n_steps):
         return odd_occupancy
 
 def n_grids(n_field_steps, occupancies, n_steps):
+    n_field_steps = n_field_steps
     ans = 0
     even_fields = 1
     odd_fields = 0
@@ -106,7 +107,9 @@ def n_grids(n_field_steps, occupancies, n_steps):
     #return 2*n_field_steps*n_field_steps + 2*n_field_steps + 1
 
 def solve_pt2(grid, farmer_pos):
-    # 637531791816968 too high
+    # 637531791816968 too low
+    # 637525510428520 too low
+    # 637531813260100 too low
     # First, just think about the spaces that can be reached.
     n_steps = 26501365
     n_field_steps = math.floor(n_steps / 131)
