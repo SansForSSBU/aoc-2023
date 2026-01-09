@@ -129,6 +129,8 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637525510428520 too low
     # 637531813260100 too low
     # 637538093084305 wrong
+    # 637538093080475 wrong
+    # 637538116142463 wrong
     # First, just think about the spaces that can be reached.
     n_field_steps = math.floor(n_steps / 131)
     steps_from_centre = n_steps % len(grid.grid[0])
@@ -156,14 +158,14 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     things["W"] = swap(things["W"])
 
     ans = 0
-    ans += things["N"][0]
-    ans += things["E"][0]
-    ans += things["S"][0]
-    ans += things["W"][0]
-    ans += things["NE"][1] * (n_field_steps + 1)
-    ans += things["NW"][1] * (n_field_steps + 1)
-    ans += things["SE"][1] * (n_field_steps + 1)
-    ans += things["SW"][1] * (n_field_steps + 1)
+    ans += things["N"][1]
+    ans += things["E"][1]
+    ans += things["S"][1]
+    ans += things["W"][1]
+    ans += things["NE"][0] * (n_field_steps)
+    ans += things["NW"][0] * (n_field_steps)
+    ans += things["SE"][0] * (n_field_steps)
+    ans += things["SW"][0] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
