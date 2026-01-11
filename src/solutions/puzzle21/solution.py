@@ -137,14 +137,14 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637537318247987 wrong
     # First, just think about the spaces that can be reached.
     
-    n_field_steps = math.floor(n_steps / 131)
+    n_field_steps = n_steps // 131
     n_field_steps_odd_or_even = n_field_steps % 2
     steps_odd_or_even = n_steps % 2
     full_steps_from_centre = n_steps % 131
     # Positions: Key is the direction you come from.
     _, _, mid = get_occupancy(grid, farmer_pos, n_steps = min(n_steps, 300))
     big_grid = Grid(np.tile(grid.grid, (5,5)))
-    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = full_steps_from_centre)
+    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
     detiled = detile(occ.grid, n=5)
     things = {
         "NW": detiled[6],
@@ -165,7 +165,7 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans = 0
     ans += flood[steps_odd_or_even%2]
     # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
-    edges_even_or_odd = (n_steps + n_field_steps) % 2
+    edges_even_or_odd = (n_steps + n_field_steps + 1) % 2
     ans += things["N"][edges_even_or_odd]
     ans += things["E"][edges_even_or_odd]
     ans += things["S"][edges_even_or_odd]
@@ -195,9 +195,9 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    verification_grid = Grid(np.tile(grid.grid, 3))
-    n = 68
-    a = solve_pt1(verification_grid, farmer_pos, n)
+    verification_grid = Grid(np.tile(grid.grid, (3,3)))
+    n = 180
+    a = solve_pt1(verification_grid, add_positions(farmer_pos, (131,131)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
     pt2_ans = solve_pt2(grid, farmer_pos)
