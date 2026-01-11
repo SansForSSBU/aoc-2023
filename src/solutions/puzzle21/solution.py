@@ -198,5 +198,10 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    pt2_ans = solve_pt2(grid, farmer_pos, 64)
+    verification_grid = Grid(np.tile(grid.grid, 3))
+    n = 100
+    a = solve_pt1(verification_grid, farmer_pos, n)
+    b = solve_pt2(grid, farmer_pos, n)
+    print(a,b)
+    pt2_ans = solve_pt2(grid, farmer_pos)
     return (pt1_ans, pt2_ans)
