@@ -169,15 +169,14 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans = 0
     ans += flood[steps_odd_or_even%2]
     # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
-    edges_even_or_odd = 0
-    ans += things["N"][edges_even_or_odd]
-    ans += things["E"][edges_even_or_odd]
-    ans += things["S"][edges_even_or_odd]
-    ans += things["W"][edges_even_or_odd]
-    ans += things["NE"][(edges_even_or_odd+1)%2] * (n_field_steps)
-    ans += things["NW"][(edges_even_or_odd+1)%2] * (n_field_steps)
-    ans += things["SE"][(edges_even_or_odd+1)%2] * (n_field_steps)
-    ans += things["SW"][(edges_even_or_odd+1)%2] * (n_field_steps)
+    ans += things["N"][(n_field_steps+n_steps)%2]
+    ans += things["E"][(n_field_steps+n_steps)%2]
+    ans += things["S"][(n_field_steps+n_steps)%2]
+    ans += things["W"][(n_field_steps+n_steps)%2]
+    ans += things["NE"][(n_field_steps+n_steps+1)%2] * (n_field_steps)
+    ans += things["NW"][(n_field_steps+n_steps+1)%2] * (n_field_steps)
+    ans += things["SE"][(n_field_steps+n_steps+1)%2] * (n_field_steps)
+    ans += things["SW"][(n_field_steps+n_steps+1)%2] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
@@ -199,9 +198,9 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    verification_grid = Grid(np.tile(grid.grid, (3,3)))
-    n = 133
-    a = solve_pt1(verification_grid, add_positions(farmer_pos, (131,131)), n)
+    verification_grid = Grid(np.tile(grid.grid, (5,5)))
+    n = 181
+    a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
     pt2_ans = solve_pt2(grid, farmer_pos)
