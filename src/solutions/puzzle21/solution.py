@@ -144,8 +144,10 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # Positions: Key is the direction you come from.
     _, _, mid = get_occupancy(grid, farmer_pos, n_steps = min(n_steps, 300))
     big_grid = Grid(np.tile(grid.grid, (5,5)))
-    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
+    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 262) + 131)
     detiled = detile(occ.grid, n=5)
+    #_, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131))
+    #detiled2 = detile(occ2.grid, n=5)
     things = {
         "NW": detiled[6],
         "N": detiled[2],
@@ -165,20 +167,20 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans = 0
     ans += flood[steps_odd_or_even%2]
     # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
-    edges_even_or_odd = (n_steps + n_field_steps + 1) % 2
+    edges_even_or_odd = 0
     ans += things["N"][edges_even_or_odd]
     ans += things["E"][edges_even_or_odd]
     ans += things["S"][edges_even_or_odd]
     ans += things["W"][edges_even_or_odd]
-    ans += things["NE"][edges_even_or_odd] * (n_field_steps)
-    ans += things["NW"][edges_even_or_odd] * (n_field_steps)
-    ans += things["SE"][edges_even_or_odd] * (n_field_steps)
-    ans += things["SW"][edges_even_or_odd] * (n_field_steps)
+    #ans += things["NE"][edges_even_or_odd] * (n_field_steps)
+    #ans += things["NW"][edges_even_or_odd] * (n_field_steps)
+    #ans += things["SE"][edges_even_or_odd] * (n_field_steps)
+    #ans += things["SW"][edges_even_or_odd] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
     state = steps_odd_or_even
-    for i in range(1,n_field_steps+1):
+    for i in range(1,n_field_steps):
         state = (state + 1) % 2
         ans += flood[state]*(i*4)
     return ans
@@ -196,7 +198,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (3,3)))
-    n = 130
+    n = 131
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (131,131)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
