@@ -146,18 +146,20 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     big_grid = Grid(np.tile(grid.grid, (5,5)))
     _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 262) + 131)
     detiled = detile(occ.grid, n=5)
+    _, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
+    detiled2 = detile(occ2.grid, n=5)
     #_, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131))
     #detiled2 = detile(occ2.grid, n=5)
     things = {
-        "NW": detiled[6],
+        "NW": detiled2[6],
         "N": detiled[2],
-        "NE": detiled[8],
+        "NE": detiled2[8],
         "W": detiled[10],
         "C": mid.grid,
         "E": detiled[14],
-        "SW": detiled[16],
+        "SW": detiled2[16],
         "S": detiled[22],
-        "SE": detiled[18]
+        "SE": detiled2[18]
     }
     for k in things.keys():
         things[k] = count_occ(things[k])
@@ -172,10 +174,10 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans += things["E"][edges_even_or_odd]
     ans += things["S"][edges_even_or_odd]
     ans += things["W"][edges_even_or_odd]
-    #ans += things["NE"][edges_even_or_odd] * (n_field_steps)
-    #ans += things["NW"][edges_even_or_odd] * (n_field_steps)
-    #ans += things["SE"][edges_even_or_odd] * (n_field_steps)
-    #ans += things["SW"][edges_even_or_odd] * (n_field_steps)
+    ans += things["NE"][(edges_even_or_odd+1)%2] * (n_field_steps)
+    ans += things["NW"][(edges_even_or_odd+1)%2] * (n_field_steps)
+    ans += things["SE"][(edges_even_or_odd+1)%2] * (n_field_steps)
+    ans += things["SW"][(edges_even_or_odd+1)%2] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
@@ -198,7 +200,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (3,3)))
-    n = 131
+    n = 133
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (131,131)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
