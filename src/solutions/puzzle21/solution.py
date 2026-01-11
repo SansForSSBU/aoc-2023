@@ -135,12 +135,10 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637538116142675 wrong
     # 637537318244157 wrong
     # 637537318247987 wrong
+    # 637531814878787 wrong
     # First, just think about the spaces that can be reached.
     
     n_field_steps = n_steps // 131
-    n_field_steps_odd_or_even = n_field_steps % 2
-    steps_odd_or_even = n_steps % 2
-    full_steps_from_centre = n_steps % 131
     # Positions: Key is the direction you come from.
     _, _, mid = get_occupancy(grid, farmer_pos, n_steps = min(n_steps, 300))
     big_grid = Grid(np.tile(grid.grid, (5,5)))
@@ -148,8 +146,6 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     detiled = detile(occ.grid, n=5)
     _, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
     detiled2 = detile(occ2.grid, n=5)
-    #_, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131))
-    #detiled2 = detile(occ2.grid, n=5)
     things = {
         "NW": detiled2[6],
         "N": detiled[2],
@@ -167,7 +163,7 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     flood = things["C"]
 
     ans = 0
-    ans += flood[steps_odd_or_even%2]
+    ans += flood[n_steps%2]
     # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
     ans += things["N"][(n_field_steps+n_steps)%2]
     ans += things["E"][(n_field_steps+n_steps)%2]
@@ -180,7 +176,7 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
 
     # C (odd)
     # even/odd are in terms of steps from the origin
-    state = steps_odd_or_even
+    state = n_steps%2
     for i in range(1,n_field_steps):
         state = (state + 1) % 2
         ans += flood[state]*(i*4)
@@ -199,7 +195,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (5,5)))
-    n = 181
+    n = 80
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
