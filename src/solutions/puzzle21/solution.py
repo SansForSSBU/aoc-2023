@@ -132,50 +132,50 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637538093080475 wrong
     # 637538116142463 wrong
     # 637538093080263 wrong
+    # 637538116142675 wrong
+    # 637537318244157 wrong
+    # 637537318247987 wrong
     # First, just think about the spaces that can be reached.
     n_field_steps = math.floor(n_steps / 131)
-    steps_from_centre = n_steps % len(grid.grid[0])
+    steps_from_centre = n_steps % len(grid.grid[0]) + 131
     # Positions: Key is the direction you come from.
-    big_grid = Grid(np.tile(grid.grid, (3,3)))
-    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (131, 131)), n_steps = steps_from_centre+len(grid.grid[0]))
-    detiled = detile(occ.grid)
+    big_grid = Grid(np.tile(grid.grid, (5,5)))
+    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = steps_from_centre)
+    detiled = detile(occ.grid, n=5)
     things = {
-        "NW": detiled[0],
-        "N": detiled[1],
-        "NE": detiled[2],
-        "W": detiled[3],
-        "C": detiled[4],
-        "E": detiled[5],
-        "SW": detiled[6],
-        "S": detiled[7],
-        "SE": detiled[8]
+        "NW": detiled[4],
+        "N": detiled[2],
+        "NE": detiled[0],
+        "W": detiled[10],
+        "C": detiled[12],
+        "E": detiled[14],
+        "SW": detiled[20],
+        "S": detiled[22],
+        "SE": detiled[24]
     }
     for k in things.keys():
         things[k] = count_occ(things[k])
     
-    things["N"] = swap(things["N"])
-    things["E"] = swap(things["E"])
-    things["S"] = swap(things["S"])
-    things["W"] = swap(things["W"])
+    flood = things["C"]
 
     ans = 0
-    ans += things["C"][1]
-    ans += things["N"][1]
-    ans += things["E"][1]
-    ans += things["S"][1]
-    ans += things["W"][1]
-    ans += things["NE"][1] * (n_field_steps)
-    ans += things["NW"][1] * (n_field_steps)
-    ans += things["SE"][1] * (n_field_steps)
-    ans += things["SW"][1] * (n_field_steps)
+    ans += flood[1]
+    # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
+    ans += things["N"][0]
+    ans += things["E"][0]
+    ans += things["S"][0]
+    ans += things["W"][0]
+    ans += things["NE"][0] * (n_field_steps)
+    ans += things["NW"][0] * (n_field_steps)
+    ans += things["SE"][0] * (n_field_steps)
+    ans += things["SW"][0] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
     state = 1
-    central = things["C"]
     for i in range(1,n_field_steps+1):
         state = (state + 1) % 2
-        ans += central[state]*(i*4)
+        ans += flood[state]*(i*4)
     return ans
                 
 
