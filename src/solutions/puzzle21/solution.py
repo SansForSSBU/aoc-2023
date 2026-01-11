@@ -143,9 +143,9 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = steps_from_centre)
     detiled = detile(occ.grid, n=5)
     things = {
-        "NW": detiled[4],
+        "NW": detiled[0],
         "N": detiled[2],
-        "NE": detiled[0],
+        "NE": detiled[4],
         "W": detiled[10],
         "C": detiled[12],
         "E": detiled[14],
