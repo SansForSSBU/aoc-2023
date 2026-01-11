@@ -136,8 +136,15 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # 637537318244157 wrong
     # 637537318247987 wrong
     # First, just think about the spaces that can be reached.
+    
     n_field_steps = math.floor(n_steps / 131)
-    steps_from_centre = n_steps % len(grid.grid[0]) + 131
+    n_field_steps_odd_or_even = n_field_steps % 2
+    steps_odd_or_even = n_steps % 2
+
+    if n_steps > 131:
+        steps_from_centre = n_steps % len(grid.grid[0]) + 131
+    else:
+        steps_from_centre = n_steps
     # Positions: Key is the direction you come from.
     big_grid = Grid(np.tile(grid.grid, (5,5)))
     _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = steps_from_centre)
@@ -159,20 +166,21 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     flood = things["C"]
 
     ans = 0
-    ans += flood[1]
+    ans += flood[steps_odd_or_even]
     # Because steps is odd, but fields crossed is even and this is n+1 these should be the even cases
-    ans += things["N"][0]
-    ans += things["E"][0]
-    ans += things["S"][0]
-    ans += things["W"][0]
-    ans += things["NE"][0] * (n_field_steps)
-    ans += things["NW"][0] * (n_field_steps)
-    ans += things["SE"][0] * (n_field_steps)
-    ans += things["SW"][0] * (n_field_steps)
+    edges_even_or_odd = (steps_odd_or_even + n_field_steps_odd_or_even) % 2
+    ans += things["N"][edges_even_or_odd]
+    ans += things["E"][edges_even_or_odd]
+    ans += things["S"][edges_even_or_odd]
+    ans += things["W"][edges_even_or_odd]
+    ans += things["NE"][edges_even_or_odd] * (n_field_steps)
+    ans += things["NW"][edges_even_or_odd] * (n_field_steps)
+    ans += things["SE"][edges_even_or_odd] * (n_field_steps)
+    ans += things["SW"][edges_even_or_odd] * (n_field_steps)
 
     # C (odd)
     # even/odd are in terms of steps from the origin
-    state = 1
+    state = steps_odd_or_even
     for i in range(1,n_field_steps+1):
         state = (state + 1) % 2
         ans += flood[state]*(i*4)
@@ -190,5 +198,5 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    pt2_ans = solve_pt2(grid, farmer_pos)
+    pt2_ans = solve_pt2(grid, farmer_pos, 64)
     return (pt1_ans, pt2_ans)
