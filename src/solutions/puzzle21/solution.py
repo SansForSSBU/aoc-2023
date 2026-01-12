@@ -142,20 +142,22 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # Positions: Key is the direction you come from.
     _, _, mid = get_occupancy(grid, farmer_pos, n_steps = min(n_steps, 300))
     big_grid = Grid(np.tile(grid.grid, (5,5)))
-    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 262) + 131)
+    _, _, occ = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
     detiled = detile(occ.grid, n=5)
-    _, _, occ2 = get_occupancy(big_grid, add_positions(farmer_pos, (262, 262)), n_steps = (n_steps % 131) + 131)
-    detiled2 = detile(occ2.grid, n=5)
     things = {
-        "NW": detiled2[6],
-        "N": detiled[2],
-        "NE": detiled2[8],
-        "W": detiled[10],
+        "NW": detiled[6],
+        "NN": detiled[2],
+        "N": detiled[7],
+        "NE": detiled[8],
+        "WW": detiled[10],
+        "W": detiled[11],
         "C": mid.grid,
-        "E": detiled[14],
-        "SW": detiled2[16],
-        "S": detiled[22],
-        "SE": detiled2[18]
+        "EE": detiled[14],
+        "E": detiled[13],
+        "SW": detiled[16],
+        "S": detiled[17],
+        "SS": detiled[22],
+        "SE": detiled[18]
     }
     for k in things.keys():
         things[k] = count_occ(things[k])
@@ -169,6 +171,10 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans += things["E"][(n_steps+1)%2]
     ans += things["S"][(n_steps+1)%2]
     ans += things["W"][(n_steps+1)%2]
+    ans += things["NN"][(n_steps+1)%2]
+    ans += things["EE"][(n_steps+1)%2]
+    ans += things["SS"][(n_steps+1)%2]
+    ans += things["WW"][(n_steps+1)%2]
     ans += things["NE"][(n_steps)%2] * (n_field_steps)
     ans += things["NW"][(n_steps)%2] * (n_field_steps)
     ans += things["SE"][(n_steps)%2] * (n_field_steps)
@@ -177,7 +183,7 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     # C (odd)
     # even/odd are in terms of steps from the origin
     state = n_steps%2
-    for i in range(1,n_field_steps):
+    for i in range(2,n_field_steps):
         state = (state + 1) % 2
         ans += flood[state]*(i*4)
     return ans
@@ -195,7 +201,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (5,5)))
-    n = 60
+    n = 180
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
