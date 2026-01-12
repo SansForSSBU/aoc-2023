@@ -201,7 +201,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (5,5)))
-    n = 120
+    n = 300
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
