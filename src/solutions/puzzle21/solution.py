@@ -171,10 +171,10 @@ def solve_pt2(grid, farmer_pos, n_steps=26501365):
     ans += things["E"][(n_steps+1)%2]
     ans += things["S"][(n_steps+1)%2]
     ans += things["W"][(n_steps+1)%2]
-    ans += things["NN"][(n_steps+1)%2]
-    ans += things["EE"][(n_steps+1)%2]
-    ans += things["SS"][(n_steps+1)%2]
-    ans += things["WW"][(n_steps+1)%2]
+    ans += things["NN"][(n_steps)%2]
+    ans += things["EE"][(n_steps)%2]
+    ans += things["SS"][(n_steps)%2]
+    ans += things["WW"][(n_steps)%2]
     ans += things["NE"][(n_steps)%2] * (n_field_steps)
     ans += things["NW"][(n_steps)%2] * (n_field_steps)
     ans += things["SE"][(n_steps)%2] * (n_field_steps)
@@ -201,7 +201,7 @@ def main(input_file):
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
     verification_grid = Grid(np.tile(grid.grid, (5,5)))
-    n = 180
+    n = 200
     a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
     b = solve_pt2(grid, farmer_pos, n)
     print(a,b)
