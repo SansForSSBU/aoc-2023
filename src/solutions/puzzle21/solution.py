@@ -97,13 +97,6 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    
-    """
-    fuckme = {}
-    for i in range(10):
-        steps = 65 + i*131
-        fuckme[i] = solve_pt2(grid, add_positions(farmer_pos, (131*((steps // 131)+1), 131*((steps // 131)+1))), steps)
-    """
     steps = 65+131
     pt2_key, a = solve_pt2(grid, add_positions(farmer_pos, (131*((steps // 131)+1), 131*((steps // 131)+1))), steps)
     pt2_ans = 0
@@ -116,9 +109,4 @@ def main(input_file):
     }
     for v in pt2_key.values():
         pt2_ans += conv[v]
-    # 122776476901
-
-    # 637537341306357 ?
     return (pt1_ans, pt2_ans)
-    pass
-    #
