@@ -72,24 +72,21 @@ def solve_pt1(bricks):
     print(len(bricks) - len(necessary))
 
     # Part 2?
-    extra_destroyed = {}
-    while len(extra_destroyed.keys()) != len(supports_others.keys()):
-        for brickId, supportsThese in supports_others.items():
-            value = 1
-            can_evaluate = True
-            for support in supportsThese:
-                if len(supported_by[support]) > 1:
-                    continue
-                elif support in list(extra_destroyed.keys()):
-                    value = value + extra_destroyed[support]
-                else:
-                    can_evaluate = False
-            if can_evaluate:
-                extra_destroyed[brickId] = value
-    print(sum(list(extra_destroyed.values())) - len(list(extra_destroyed.keys())))
-    pass
+    pt2_ans = 0
+    for brickId in supports_others.keys():
+        destroyed_ids = [brickId]
+        while True:
+            done = True
+            for k,v in supported_by.items():
+                if (not k in destroyed_ids) and len(v) > 0 and all([x in destroyed_ids for x in v]) :
+                    destroyed_ids.append(k)
+                    done = False
+            if done:
+                break
+        
+        pt2_ans += len(destroyed_ids) - 1
 
-    # 1061 wrong
+    print(pt2_ans)
 
 def main(input_file):
     bricks = [Brick(b) for b in input_file.split("\n") if len(b) > 0]
