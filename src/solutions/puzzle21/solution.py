@@ -44,8 +44,28 @@ class Grid():
 def add_positions(a,b):
     return (a[0]+b[0], a[1]+b[1])
 
+def get_supergrid_pos(pos):
+    return (pos[0] // 131, pos[1] // 131)
+
 def solve_pt1(grid, farmer_pos, num_steps):
     reached = np.zeros(grid.grid.shape)
+    reached[farmer_pos[1], farmer_pos[0]] = 1
+    positions = [farmer_pos]
+    steps_to = {farmer_pos: 0}
+    for step in range(1, num_steps+1):
+        next_positions = []
+        for position in positions:
+            for next in grid.get_adjacents(position):
+                if reached[next[1], next[0]] == 1:
+                    continue
+                reached[next[1], next[0]] = 1
+                steps_to[next] = min(step, steps_to.get(next, math.inf))
+                next_positions.append(next)
+        positions = next_positions
+    return len([k for k,v in steps_to.items() if v % 2 == num_steps % 2])
+
+def solve_pt2(grid, farmer_pos, num_steps):
+    reached = np.zeros([grid.grid.shape[0]*(1+(num_steps%131)), grid.grid.shape[1]*(1+(num_steps%131))])
     reached[farmer_pos[1], farmer_pos[0]] = 1
     positions = [farmer_pos]
     steps_to = {farmer_pos: 0}
@@ -71,10 +91,7 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    verification_grid = Grid(np.tile(grid.grid, (5,5)))
-    n = 300
-    a = solve_pt1(verification_grid, add_positions(farmer_pos, (262,262)), n)
-    b = solve_pt2(grid, farmer_pos, n)
-    print(a,b)
-    pt2_ans = solve_pt2(grid, farmer_pos)
-    return (pt1_ans, pt2_ans)
+    pt2_steps = 64+(5*131)
+    pt2_ans = solve_pt2(grid, add_positions(farmer_pos, (131*((pt2_steps // 131)+1), 131*((pt2_steps // 131)+1))), pt2_steps)
+    print(pt2_ans)
+    pass
