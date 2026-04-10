@@ -38,7 +38,7 @@ def ranges_overlap(range1, range2):
     return len(l) != 0
 
 def solve_pt1(bricks):
-    bricks = sorted(bricks, key=lambda brick: brick.pos1[2])
+    bricks = sorted(bricks, key=lambda brick: brick.pos1[2]*1000 + brick.pos2[2])
     landed = []
     supports = []
     for idx, brick in enumerate(bricks):
@@ -62,35 +62,36 @@ def solve_pt1(bricks):
     str_landed = [str(brick) for brick in landed]
     for idx, s in enumerate(supports):
         supports[idx] = [str_landed.index(x) for x in s]
-    supported_by = {k:v for k, v in enumerate(supports)}
+    supported_by = {k:list(set(v)) for k, v in enumerate(supports)}
     supports_others = {k: [] for k in supported_by.keys()}
     for k,v in supported_by.items():
         for a in v:
             supports_others[a].append(k)
-    necessary_bricks = {k:v for k,v in supports_others.items() if len(v) > 0}
-    definitely_necessary_bricks = {}
-    rm = []
-    for brick_id, supporting in necessary_bricks.items():
-        for idx in supporting:
-            if len(supported_by[idx]) == 1:
-                definitely_necessary_bricks[brick_id] = supporting
-                rm.append(brick_id)
-    for r in list(set(rm)):
-        del necessary_bricks[r]
+    # Part 1:
+    necessary = [k for k in supports_others.keys() if [k] in list(supported_by.values())]
+    print(len(bricks) - len(necessary))
+
+    # Part 2?
+    rm = set()
+    for k,v in supported_by.items():
+        if len(v) == 0:
+            rm.add(k)
+    
+    for r in list(rm):
+        if r in supported_by.keys():
+            del supported_by[r]
+
+    for k,v in list(supported_by.items()):
+        for n in necessary:
+            if n in v:
+                rm.add(k)
+
+    for r in list(rm):
+        if r in supported_by.keys():
+            del supported_by[r]
     pass
-    a = []
-    for k,v in definitely_necessary_bricks.items():
-        a.extend(v)
-    a = list(set(a))
-    for b in list(supported_by.keys()):
-        if supported_by.get(b, []) == []:
-            del supported_by[b]
-    for b in a:
-        if b in supported_by.keys():
-            del supported_by[b]
-    # account for ones which could be supported by something else
-    # 334 too low?
-    # 416 too low
+
+    # 1061 wrong
 
 def main(input_file):
     bricks = [Brick(b) for b in input_file.split("\n") if len(b) > 0]
