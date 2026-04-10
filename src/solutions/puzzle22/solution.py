@@ -50,7 +50,7 @@ def solve_pt1(bricks):
             fallen_brick = deepcopy(brick)
             fallen_brick.fall_one()
             for land in possible_landed:
-                if land.overlaps_xyz(brick):
+                if land.overlaps_xyz(fallen_brick):
                     supported_by.append(land)
             if len(supported_by) > 0:
                 break
@@ -72,23 +72,21 @@ def solve_pt1(bricks):
     print(len(bricks) - len(necessary))
 
     # Part 2?
-    rm = set()
-    for k,v in supported_by.items():
-        if len(v) == 0:
-            rm.add(k)
-    
-    for r in list(rm):
-        if r in supported_by.keys():
-            del supported_by[r]
-
-    for k,v in list(supported_by.items()):
-        for n in necessary:
-            if n in v:
-                rm.add(k)
-
-    for r in list(rm):
-        if r in supported_by.keys():
-            del supported_by[r]
+    extra_destroyed = {}
+    while len(extra_destroyed.keys()) != len(supports_others.keys()):
+        for brickId, supportsThese in supports_others.items():
+            value = 1
+            can_evaluate = True
+            for support in supportsThese:
+                if len(supported_by[support]) > 1:
+                    continue
+                elif support in list(extra_destroyed.keys()):
+                    value = value + extra_destroyed[support]
+                else:
+                    can_evaluate = False
+            if can_evaluate:
+                extra_destroyed[brickId] = value
+    print(sum(list(extra_destroyed.values())) - len(list(extra_destroyed.keys())))
     pass
 
     # 1061 wrong
