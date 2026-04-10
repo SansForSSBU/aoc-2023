@@ -45,10 +45,10 @@ def solve_pt1(bricks):
         possible_landed = [l for l in landed if brick.overlaps_xy(l)]
         while True:
             supported_by = []
+            if brick.pos1[2] <= 1 or brick.pos2[2] <= 1:
+                break
             fallen_brick = deepcopy(brick)
             fallen_brick.fall_one()
-            if brick.pos1[2] <= 0 or brick.pos2[2] <= 0:
-                break
             for land in possible_landed:
                 if land.overlaps_xyz(brick):
                     supported_by.append(land)
