@@ -59,7 +59,7 @@ def solve_pt1(grid, farmer_pos, num_steps):
                 steps_to[next] = min(step, steps_to.get(next, math.inf))
                 next_positions.append(next)
         positions = next_positions
-    return len([k for k,v in steps_to.items() if v % 2 == 0])
+    return len([k for k,v in steps_to.items() if v % 2 == num_steps % 2])
 
 def main(input_file):
     lines = input_file.split("\n")[:-1]
