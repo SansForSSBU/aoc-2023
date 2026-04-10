@@ -69,7 +69,7 @@ def solve_pt1(bricks):
             supports_others[a].append(k)
     # Part 1:
     necessary = [k for k in supports_others.keys() if [k] in list(supported_by.values())]
-    print(len(bricks) - len(necessary))
+    pt1_ans = len(bricks) - len(necessary)
 
     # Part 2?
     pt2_ans = 0
@@ -86,9 +86,9 @@ def solve_pt1(bricks):
         
         pt2_ans += len(destroyed_ids) - 1
 
-    print(pt2_ans)
+    return (pt1_ans, pt2_ans)
 
 def main(input_file):
     bricks = [Brick(b) for b in input_file.split("\n") if len(b) > 0]
-    pt1_ans = solve_pt1(bricks)
-    pass
+    pt1_ans, pt2_ans = solve_pt1(bricks)
+    return (pt1_ans, pt2_ans)
