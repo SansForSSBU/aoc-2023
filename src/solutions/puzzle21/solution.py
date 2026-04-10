@@ -79,7 +79,13 @@ def solve_pt2(grid, farmer_pos, num_steps):
                 steps_to[next] = min(step, steps_to.get(next, math.inf))
                 next_positions.append(next)
         positions = next_positions
-    return len([k for k,v in steps_to.items() if v % 2 == num_steps % 2])
+    num_subgrids = {}
+    for k,v in steps_to.items():
+        if v % 2 != num_steps % 2:
+            continue
+        snapped = grid.convert_to_grid_detection_pos(k)
+        num_subgrids[snapped] = num_subgrids.get(snapped, 0) + 1
+    return num_subgrids, len([k for k,v in steps_to.items() if v % 2 == num_steps % 2])
 
 def main(input_file):
     lines = input_file.split("\n")[:-1]
@@ -91,7 +97,28 @@ def main(input_file):
     grid = Grid(np.array([[1 if char == "#" else 0 for char in list(line)] for line in lines]))
     
     pt1_ans = solve_pt1(grid, farmer_pos, 64)
-    pt2_steps = 64+(5*131)
-    pt2_ans = solve_pt2(grid, add_positions(farmer_pos, (131*((pt2_steps // 131)+1), 131*((pt2_steps // 131)+1))), pt2_steps)
-    print(pt2_ans)
+    
+    """
+    fuckme = {}
+    for i in range(10):
+        steps = 65 + i*131
+        fuckme[i] = solve_pt2(grid, add_positions(farmer_pos, (131*((steps // 131)+1), 131*((steps // 131)+1))), steps)
+    """
+    steps = 65+131
+    pt2_key, a = solve_pt2(grid, add_positions(farmer_pos, (131*((steps // 131)+1), 131*((steps // 131)+1))), steps)
+    pt2_ans = 0
+    n = 26501365 // 131
+    #n = 1
+    conv = {
+        1: n*n,
+        2: (n*n) + n,
+        4: (n+1)*(n+1)
+    }
+    for v in pt2_key.values():
+        pt2_ans += conv[v]
+    # 122776476901
+
+    # 637537341306357 ?
+    return (pt1_ans, pt2_ans)
     pass
+    #
