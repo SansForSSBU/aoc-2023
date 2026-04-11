@@ -33,7 +33,7 @@ class Maze():
     def is_in_grid(self, pos):
         return pos[0] in range(0, len(self.grid[0])) and pos[1] in range(0, len(self.grid))
 
-    def get_moves(self):
+    def get_moves(self, part2 = False):
         nexts = get_adjacents(self.curr_pos)
         valid_moves = []
         for dir, next in nexts.items():
@@ -41,14 +41,15 @@ class Maze():
                 continue
             if self.get_char(next) == "#":
                 continue
-            if self.get_char(next) == "^" and dir == "S":
-                continue
-            if self.get_char(next) == ">" and dir == "W":
-                continue
-            if self.get_char(next) == "v" and dir == "N":
-                continue
-            if self.get_char(next) == "<" and dir == "E":
-                continue
+            if not part2:
+                if self.get_char(next) == "^" and dir == "S":
+                    continue
+                if self.get_char(next) == ">" and dir == "W":
+                    continue
+                if self.get_char(next) == "v" and dir == "N":
+                    continue
+                if self.get_char(next) == "<" and dir == "E":
+                    continue
             valid_moves.append(next)
         return valid_moves
     
@@ -121,15 +122,11 @@ def solve_pt1(transitions):
         pass
     return max_len
 
-def main(input_file):
-    l = [list(line) for line in input_file.split("\n") if len(line) > 0]
-    start_pos = (l[0].index("."), 0)
-    end_pos = (l[-1].index("."), len(l)-1)
-    maze = Maze(l, start_pos, start_pos, end_pos)
+def get_transitions(maze):
     junctions = maze.get_junctions()
     junctions = {f"j{k}":v for k,v in enumerate(junctions)}
-    junctions["S"] = start_pos
-    junctions["E"] = end_pos
+    junctions["S"] = maze.start_pos
+    junctions["E"] = maze.end_pos
     reverse_junctions_dict = {v:k for k,v in junctions.items()}
     transitions = {}
     for k,v in junctions.items():
@@ -151,6 +148,13 @@ def main(input_file):
                 if len(nexts) == 0:
                     break
                 m.do_move(nexts[0])
-    
+    return transitions
+
+def main(input_file):
+    l = [list(line) for line in input_file.split("\n") if len(line) > 0]
+    start_pos = (l[0].index("."), 0)
+    end_pos = (l[-1].index("."), len(l)-1)
+    maze = Maze(l, start_pos, start_pos, end_pos)
+    transitions = get_transitions(maze)
     pt1_ans = solve_pt1(transitions)
     return (pt1_ans, 0)
