@@ -3,8 +3,8 @@ import math
 class Particle():
     def __init__(self, input_line):
         pos, vel = input_line.split("@")
-        self.pos = [int(x) for x in pos.split(",")]
-        self.vel = [int(x) for x in vel.split(",")]
+        self.pos = [float(x) for x in pos.split(",")]
+        self.vel = [float(x) for x in vel.split(",")]
 
     def pos_at_time(self, t):
         x = self.pos[0] + (self.vel[0] * t)
@@ -22,6 +22,8 @@ class Particle():
         pos_diff = opx - spx # How much distance is there to cover?
         vel_diff = svx - ovx # How fast is self catching up to other?
         if vel_diff == 0:
+            if pos_diff == 0:
+                pass
             return None
         time = pos_diff / vel_diff
         if time < 0:
@@ -30,6 +32,7 @@ class Particle():
         self_at_time = self.pos_at_time(time)
         other_at_time = other.pos_at_time(time)
         if math.isclose(self_at_time[1], other_at_time[1], abs_tol=100):
+            print(time)
             return self_at_time
         return None
 
@@ -50,4 +53,5 @@ def main(input_file):
             if is_in_test_area(intersect):
                 pt1_ans += 1
     return (pt1_ans, 0)
+    # 1 wrong
     pass
