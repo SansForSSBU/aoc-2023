@@ -19,8 +19,8 @@ class Particle():
         opx = other.pos[0]
         svx = self.vel[0]
         ovx = other.vel[0]
-        pos_diff = spx - opx # How much distance is there to cover?
-        vel_diff = ovx - svx # How fast is self catching up to other?
+        pos_diff = opx - spx # How much distance is there to cover?
+        vel_diff = svx - ovx # How fast is self catching up to other?
         if vel_diff == 0:
             return None
         time = pos_diff / vel_diff
@@ -31,7 +31,7 @@ class Particle():
         other_at_time = other.pos_at_time(time)
         if math.isclose(self_at_time[1], other_at_time[1], abs_tol=100):
             return self_at_time
-        pass
+        return None
 
 def is_in_test_area(pos):
     if pos[0] >= 200000000000000 and pos[0] <= 400000000000000:
