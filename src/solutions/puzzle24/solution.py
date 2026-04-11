@@ -1,17 +1,21 @@
 import math
 from sympy import symbols, linsolve, EmptySet
+from copy import deepcopy
 
 
 t = symbols('t', real=True)
 
 class Particle():
+    def set_self_pos(self, time_symbol):
+        self.x = time_symbol*self.v[0] + self.p[0]
+        self.y = time_symbol*self.v[1] + self.p[1]
+        self.z = time_symbol*self.v[2] + self.p[2]
+
     def __init__(self, input_line):        
         pos, vel = input_line.split("@")
-        p = [int(x) for x in pos.split(",")]
-        v = [int(x) for x in vel.split(",")]
-        self.x = t*v[0] + p[0]
-        self.y = t*v[1] + p[1]
-        self.z = t*v[2] + p[2]
+        self.p = [int(x) for x in pos.split(",")]
+        self.v = [int(x) for x in vel.split(",")]
+        self.set_self_pos(t)
 
 def is_in_test_area(pos):
     if pos[0] >= 200000000000000 and pos[0] <= 400000000000000:
@@ -24,14 +28,19 @@ def main(input_file):
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
     for idx, p1 in enumerate(particles):
         for p2 in particles[idx+1:]:
-            x_intersect = linsolve([p1.x - p2.x], (t))
-            if x_intersect == EmptySet:
+            t1 = symbols('t1', real=True)
+            t2 = symbols('t2', real=True)
+            a = deepcopy(p1)
+            b = deepcopy(p2)
+            a.set_self_pos(t1)
+            b.set_self_pos(t2)
+            solved = list(linsolve([a.x - b.x, a.y - b.y], (t1, t2)))
+            if len(solved) > 1:
+                raise Exception
+            if len(solved) == 0:
                 continue
-            t_value = list(x_intersect)[0][0]
-            x = float(p1.x.subs(t, t_value))
-            y = float(p1.y.subs(t, t_value))
-            pos = (x,y)
-            if is_in_test_area(pos):
+            if is_in_test_area(solved[0]):
                 pt1_ans += 1
+            pass
     
     return (pt1_ans, 0)
