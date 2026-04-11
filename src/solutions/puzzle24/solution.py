@@ -37,6 +37,8 @@ def main(input_file):
             solved = list(linsolve([a.x - b.x, a.y - b.y], (t1, t2)))
             if len(solved) > 1:
                 raise Exception
+            if len(solved) == 0:
+                continue
             t1_val, t2_val = solved[0]
             if t1_val < 0 or t2_val < 0:
                 continue
