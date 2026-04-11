@@ -2,3 +2,4 @@ requests
 pytest
 pulp
 numpy
+sympy
