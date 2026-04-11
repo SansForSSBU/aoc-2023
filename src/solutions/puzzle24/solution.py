@@ -22,8 +22,8 @@ class Particle():
         pos_diff = opx - spx # How much distance is there to cover?
         vel_diff = svx - ovx # How fast is self catching up to other?
         if vel_diff == 0:
-            if pos_diff == 0:
-                pass
+            if int(pos_diff) == 0:
+                raise Exception()
             return None
         time = pos_diff / vel_diff
         if time < 0:
@@ -31,7 +31,7 @@ class Particle():
         
         self_at_time = self.pos_at_time(time)
         other_at_time = other.pos_at_time(time)
-        if math.isclose(self_at_time[1], other_at_time[1], abs_tol=100):
+        if math.isclose(self_at_time[1], other_at_time[1], abs_tol=100000):
             print(time)
             return self_at_time
         return None
@@ -54,4 +54,5 @@ def main(input_file):
                 pt1_ans += 1
     return (pt1_ans, 0)
     # 1 wrong
+    # 0 wrong
     pass
