@@ -76,16 +76,6 @@ class Maze():
                     junctions.append(pos)
         return junctions
 
-def get_results(m):
-    next_positions = m.get_moves()
-    for next_position in next_positions:
-        next_maze = deepcopy(m)
-        next_maze.do_move(next_position)
-        if next_maze.at_end():
-            yield next_maze.steps
-        else:
-            yield next_maze
-
 class Path():
     def __init__(self, nodes, length):
         self.nodes = nodes
@@ -122,7 +112,7 @@ def solve_pt1(transitions):
         pass
     return max_len
 
-def get_transitions(maze):
+def get_transitions(maze, pt2=False):
     junctions = maze.get_junctions()
     junctions = {f"j{k}":v for k,v in enumerate(junctions)}
     junctions["S"] = maze.start_pos
@@ -132,7 +122,7 @@ def get_transitions(maze):
     for k,v in junctions.items():
         maze_copy = deepcopy(maze)
         maze_copy.curr_pos = v
-        moves = maze_copy.get_moves()
+        moves = maze_copy.get_moves(part2=pt2)
         transitions[k] = []
         for move in moves:
             m = deepcopy(maze_copy)
@@ -142,7 +132,7 @@ def get_transitions(maze):
                     j = (reverse_junctions_dict[m.curr_pos], m.steps)
                     transitions[k].append(j)
                     break
-                nexts = m.get_moves()
+                nexts = m.get_moves(part2=pt2)
                 if len(nexts) > 1:
                     raise Exception()
                 if len(nexts) == 0:
@@ -155,6 +145,10 @@ def main(input_file):
     start_pos = (l[0].index("."), 0)
     end_pos = (l[-1].index("."), len(l)-1)
     maze = Maze(l, start_pos, start_pos, end_pos)
+
     transitions = get_transitions(maze)
     pt1_ans = solve_pt1(transitions)
-    return (pt1_ans, 0)
+
+    transitions = get_transitions(maze, pt2=True)
+    pt2_ans = solve_pt1(transitions)
+    return (pt1_ans, pt2_ans)
