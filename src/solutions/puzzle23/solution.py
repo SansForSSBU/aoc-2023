@@ -85,8 +85,41 @@ def get_results(m):
         else:
             yield next_maze
 
+class Path():
+    def __init__(self, nodes, length):
+        self.nodes = nodes
+        self.length = length
+        
+    def can_add_node(self, node_name):
+        return not node_name in self.nodes
+    
+    def add_node(self, node):
+        self.nodes.append(node[0])
+        self.length += node[1]
+
+    def __str__(self):
+        return f"{self.length}: {','.join(self.nodes)}"
+    
+    def __repr__(self):
+        return self.__str__()
+
 def solve_pt1(transitions):
-    pass
+    # Find the journey from S to E which takes the most steps
+    max_len = 0
+    paths = [Path(["S"], 0)]
+    while len(paths) > 0:
+        curr_path = paths.pop()
+        if curr_path.nodes[-1] == "E":
+            max_len = max(max_len, curr_path.length)
+            continue
+        trans = transitions[curr_path.nodes[-1]]
+        trans = [t for t in trans if curr_path.can_add_node(t[0])]
+        for t in trans:
+            p = deepcopy(curr_path)
+            p.add_node(t)
+            paths.append(p)
+        pass
+    return max_len
 
 def main(input_file):
     l = [list(line) for line in input_file.split("\n") if len(line) > 0]
@@ -120,9 +153,4 @@ def main(input_file):
                 m.do_move(nexts[0])
     
     pt1_ans = solve_pt1(transitions)
-    pass
-
-
-
-        
-    return (0, 0)
+    return (pt1_ans, 0)
