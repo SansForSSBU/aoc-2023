@@ -37,9 +37,12 @@ def main(input_file):
             solved = list(linsolve([a.x - b.x, a.y - b.y], (t1, t2)))
             if len(solved) > 1:
                 raise Exception
-            if len(solved) == 0:
+            t1_val, t2_val = solved[0]
+            if t1_val < 0 or t2_val < 0:
                 continue
-            if is_in_test_area(solved[0]):
+            intersect_a = (p1.x.subs(t, t1_val), p1.y.subs(t, t1_val))
+            #intersect_b = (p2.x.subs(t, t2_val), p2.y.subs(t, t2_val))
+            if is_in_test_area(intersect_a):
                 pt1_ans += 1
             pass
     
