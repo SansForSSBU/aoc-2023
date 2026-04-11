@@ -85,22 +85,20 @@ def main(input_file):
     x_pairs = [(p.v[0], p.p[0]) for p in particles]
     vels = [p[0] for p in x_pairs]
     unique_vels = list(set(vels))
-    three_vels = [v for v in unique_vels if vels.count(v) == 3]
-    t1, t2, t3, c, m = symbols("t1 t2 t3 c m", real=True)
+    three_vels = [v for v in unique_vels if vels.count(v) == 4]
+    t, t1, t2, t3, t4, c, m = symbols("t t1 t2 t3 t4 c m", real=True)
     my_eqs = []
+    full_eq = m*t + c
     for three in three_vels:
         positions = sorted([pair[1] for pair in x_pairs if pair[0] == three])
-        eq_1 = (m-three)*t1 + c - positions[0]
-        eq_2 = (m-three)*t2 + c - positions[1]
-        eq_3 = (m-three)*t3 + c - positions[2]
-        eq_1 = eq_1.subs(t1, 0)
-        eq_2 = eq_2.subs(t2, 1)
-        solutions = solve([eq_1, eq_2, eq_3], (t3, c, m))
-        if len(solutions) != 1:
-            raise Exception()
-        _, val_c, val_m = solutions[0]
-        my_eqs.append(val_m)
-        print(solutions)
+        my_eqs.append(positions[0] + t1 * three - full_eq.subs(t, t1))
+        my_eqs.append(positions[1] + t2 * three - full_eq.subs(t, t2))
+        my_eqs.append(positions[2] + t3 * three - full_eq.subs(t, t3))
+        my_eqs.append(positions[3] + t4 * three - full_eq.subs(t, t4))
+        my_eqs.append(t1)
+        my_eqs.append(t2-1)
+        solutions = solve(my_eqs, (t1, t2, t3, t4, c, m))
+        pass
         pass
     pass
     
