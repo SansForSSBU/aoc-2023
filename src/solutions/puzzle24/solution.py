@@ -50,40 +50,21 @@ def solve_pt1(particles):
     return pt1_ans
 
 def example_problem():
-    t, t1, t2, t3, t4, t5 = symbols("t t1 t2 t3 t4 t5", real=True)
-    m, c = symbols("m c", real=True)
-    p = m*t + c
-    
-    p1 = 19 - 2*t1
-    p2 = 18 - t2
-    p3 = 20 - 2*t3
-    p4 = 12 - t4
-    p5 = 20 + t5
+    t1, t2, t3, t4, t5 = symbols("t1 t2 t3 t4 t5", real=True)
+    lines = [
+        "19, 13, 30 @ -2, 1, -2",
+        "18, 19, 22 @ -1, -1, -2",
+        "20, 25, 34 @ -2, -2, -4",
+        "12, 31, 28 @ -1, -2, -1",
+        "20, 19, 15 @ 1, -5, -3"
+    ]
+    sym = [t1, t2, t3, t4, t5]
+    particles = [Particle(p) for p in lines]
+    for idx, particle in enumerate(particles):
+        pass
+        time_sym = sym[idx]
+        particle.set_self_pos(time_sym)
 
-    eqs = [
-        p.subs(t, t1) - p1,
-        p.subs(t, t2) - p2,
-        p.subs(t, t3) - p3,
-        p.subs(t, t4) - p4,
-        p.subs(t, t5) - p5
-    ]
-    finds = (t1, t2, t3, t4, t5, c, m)
-    times = solve(eqs, finds)
-    
-    diffs = [
-        times[t1] - times[t3]
-    ]
-    pass
-
-    eqs = [
-        p.subs(t, t1) - p1,
-        p.subs(t, t2) - p2,
-        p.subs(t, t3) - p3,
-        #t1 - t2 - 2, # Outside information
-        #t1 - t3 - 1 # Outside information
-    ]
-    finds = (t1, t2, t3, c, m)
-    solutions = solve(eqs, finds)
     pass
 
 def full_problem(particles):
@@ -100,22 +81,27 @@ def main(input_file):
         time_sym = symbols(f"t{idx+1}", real=True)
         particle.set_self_pos(time_sym)
     pt1_ans = 0#solve_pt1(particles)
-    example_problem()
-    #eqs = [particle.x for particle in particles]
-    pass
-    full_problem(particles)
-    destroyer_m = symbols("des_m", real=True)
-    destroyer_c = symbols("des_c", real=True)
-    destroyer_t = symbols("des_t", real=True)
-    destroyer_eq = (destroyer_m * destroyer_t) + destroyer_c
-    dest_eqs = []
-    time_coefficients = []
-    for first_eq in eqs[:5]:
-        t = list(first_eq.free_symbols)[0]
-        time_coefficients.append(t)
-        dest_eq = destroyer_eq.subs(destroyer_t, t)
+    particles = [v for k,v in enumerate(particles)]
+    x_pairs = [(p.v[0], p.p[0]) for p in particles]
+    vels = [p[0] for p in x_pairs]
+    unique_vels = list(set(vels))
+    three_vels = [v for v in unique_vels if vels.count(v) == 3]
+    t1, t2, t3, c, m = symbols("t1 t2 t3 c m", real=True)
+    my_eqs = []
+    for three in three_vels:
+        positions = sorted([pair[1] for pair in x_pairs if pair[0] == three])
+        eq_1 = (m-three)*t1 + c - positions[0]
+        eq_2 = (m-three)*t2 + c - positions[1]
+        eq_3 = (m-three)*t3 + c - positions[2]
+        eq_1 = eq_1.subs(t1, 0)
+        eq_2 = eq_2.subs(t2, 1)
+        solutions = solve([eq_1, eq_2, eq_3], (t3, c, m))
+        if len(solutions) != 1:
+            raise Exception()
+        _, val_c, val_m = solutions[0]
+        my_eqs.append(val_m)
+        print(solutions)
         pass
-        dest_eqs.append(dest_eq - first_eq)
     pass
     
     
