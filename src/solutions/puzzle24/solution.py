@@ -23,9 +23,8 @@ def is_in_test_area(pos):
             return True
     return False
 
-def main(input_file):
+def solve_pt1(particles):
     pt1_ans = 0
-    particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
     for idx, p1 in enumerate(particles):
         for p2 in particles[idx+1:]:
             t1 = symbols('t1', real=True)
@@ -47,5 +46,11 @@ def main(input_file):
             if is_in_test_area(intersect_a):
                 pt1_ans += 1
             pass
+    return pt1_ans
+
+def main(input_file):
+    particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
+    pt1_ans = solve_pt1(particles)
+    pass
     
     return (pt1_ans, 0)
