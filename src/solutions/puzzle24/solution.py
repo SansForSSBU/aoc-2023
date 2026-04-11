@@ -24,10 +24,10 @@ def main(input_file):
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
     for idx, p1 in enumerate(particles):
         for p2 in particles[idx+1:]:
-            intersection = linsolve([p1.x - p2.x, p1.y - p2.y], (t))
-            if intersection == EmptySet:
+            x_intersect = linsolve([p1.x - p2.x], (t))
+            if x_intersect == EmptySet:
                 continue
-            t_value = list(intersection)[0][0]
+            t_value = list(x_intersect)[0][0]
             x = float(p1.x.subs(t, t_value))
             y = float(p1.y.subs(t, t_value))
             pos = (x,y)
