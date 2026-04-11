@@ -7,10 +7,10 @@ def add_tuples(t1, t2):
 
 def get_adjacents(pos):
     moves = {
-        "E": (0, 1), 
-        "S": (1, 0), 
-        "W": (0, -1), 
-        "N":(-1, 0)
+        "S": (0, 1), 
+        "E": (1, 0), 
+        "N": (0, -1), 
+        "W":(-1, 0)
     }
     return {k: add_tuples(m, pos) for k, m in moves.items()}
 
@@ -85,15 +85,19 @@ def get_results(m):
         else:
             yield next_maze
 
+def solve_pt1(transitions):
+    pass
+
 def main(input_file):
     l = [list(line) for line in input_file.split("\n") if len(line) > 0]
     start_pos = (l[0].index("."), 0)
     end_pos = (l[-1].index("."), len(l)-1)
     maze = Maze(l, start_pos, start_pos, end_pos)
     junctions = maze.get_junctions()
-    junctions = {k:v for k,v in enumerate(junctions)}
+    junctions = {f"j{k}":v for k,v in enumerate(junctions)}
     junctions["S"] = start_pos
     junctions["E"] = end_pos
+    reverse_junctions_dict = {v:k for k,v in junctions.items()}
     transitions = {}
     for k,v in junctions.items():
         maze_copy = deepcopy(maze)
@@ -105,7 +109,8 @@ def main(input_file):
             m.do_move(move)
             while True:
                 if m.curr_pos in junctions.values():
-                    transitions[k].append(m.curr_pos)
+                    j = (reverse_junctions_dict[m.curr_pos], m.steps)
+                    transitions[k].append(j)
                     break
                 nexts = m.get_moves()
                 if len(nexts) > 1:
@@ -113,7 +118,8 @@ def main(input_file):
                 if len(nexts) == 0:
                     break
                 m.do_move(nexts[0])
-        pass
+    
+    pt1_ans = solve_pt1(transitions)
     pass
 
 
