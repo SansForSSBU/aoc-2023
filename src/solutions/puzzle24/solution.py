@@ -50,7 +50,22 @@ def solve_pt1(particles):
 
 def main(input_file):
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
-    pt1_ans = solve_pt1(particles)
+    for idx, particle in enumerate(particles):
+        pass
+        time_sym = symbols(f"t{idx+1}", real=True)
+        particle.set_self_pos(time_sym)
+    pt1_ans = 0#solve_pt1(particles)
+    eqs = [particle.x for particle in particles]
+    destroyer_m = symbols("des_m", real=True)
+    destroyer_c = symbols("des_c", real=True)
+    destroyer_t = symbols("des_t", real=True)
+    destroyer_eq = destroyer_m * destroyer_t + destroyer_c
+    dest_eqs = []
+    for first_eq in eqs[:5]:
+        t = list(first_eq.free_symbols)[0]
+        dest_eq = destroyer_eq.subs(destroyer_t, t)
+        dest_eqs.append(dest_eq - first_eq)
+    a = linsolve(dest_eqs, (destroyer_m, destroyer_c))
     pass
     
     return (pt1_ans, 0)
