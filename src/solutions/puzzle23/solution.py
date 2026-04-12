@@ -105,24 +105,6 @@ class Maze():
 
         return G
 
-class Path():
-    def __init__(self, nodes, length):
-        self.nodes = nodes
-        self.length = length
-        
-    def can_add_node(self, node_name):
-        return not node_name in self.nodes
-    
-    def add_node(self, node):
-        self.nodes.append(node[0])
-        self.length += node[1]
-
-    def __str__(self):
-        return f"{self.length}: {','.join(self.nodes)}"
-    
-    def __repr__(self):
-        return self.__str__()
-
 def solve_pt1(G):
     paths = nx.all_simple_paths(G, source='S', target='E')
     max_len = 0
