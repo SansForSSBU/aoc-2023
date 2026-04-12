@@ -1,6 +1,7 @@
 import numpy as np
 from copy import deepcopy
 import os
+import networkx as nx
 
 def add_tuples(t1, t2):
     return tuple([int(x) for x in np.add(t1, t2)])
@@ -94,21 +95,11 @@ class Path():
     def __repr__(self):
         return self.__str__()
 
-def solve_pt1(transitions):
+def solve_pt1(G):
+    paths = nx.all_simple_paths(G, source='S', target='E')
     max_len = 0
-    paths = [Path(["S"], 0)]
-    while len(paths) > 0:
-        curr_path = paths.pop()
-        if curr_path.nodes[-1] == "E":
-            max_len = max(max_len, curr_path.length)
-            continue
-        trans = transitions[curr_path.nodes[-1]]
-        trans = [t for t in trans if curr_path.can_add_node(t[0])]
-        for t in trans:
-            p = deepcopy(curr_path)
-            p.add_node(t)
-            paths.append(p)
-        pass
+    for path in paths:
+        max_len = max(max_len, nx.path_weight(G, path, weight='weight'))
     return max_len
 
 def get_transitions(maze, pt2=False):
@@ -137,7 +128,12 @@ def get_transitions(maze, pt2=False):
                 if len(nexts) == 0:
                     break
                 m.do_move(nexts[0])
-    return transitions
+    G = nx.DiGraph()
+    for k,v in transitions.items():
+        for k2 in v:
+            dest, cost = k2
+            G.add_edge(k, dest, weight=cost)
+    return G
 
 def main(input_file):
     l = [list(line) for line in input_file.split("\n") if len(line) > 0]
@@ -145,9 +141,9 @@ def main(input_file):
     end_pos = (l[-1].index("."), len(l)-1)
     maze = Maze(l, start_pos, start_pos, end_pos)
 
-    transitions = get_transitions(maze)
-    pt1_ans = solve_pt1(transitions)
+    G = get_transitions(maze)
+    pt1_ans = solve_pt1(G)
 
-    transitions = get_transitions(maze, pt2=True)
-    pt2_ans = solve_pt1(transitions)
+    G = get_transitions(maze, pt2=True)
+    pt2_ans = solve_pt1(G)
     return (pt1_ans, pt2_ans)
