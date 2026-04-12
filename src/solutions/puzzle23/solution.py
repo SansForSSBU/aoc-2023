@@ -76,6 +76,34 @@ class Maze():
                 if self.is_junction(pos):
                     junctions.append(pos)
         return junctions
+    
+    def to_graph(self, pt2=False):
+        junctions = self.get_junctions()
+        junctions = {f"j{k}":v for k,v in enumerate(junctions)}
+        junctions["S"] = self.start_pos
+        junctions["E"] = self.end_pos
+        reverse_junctions_dict = {v:k for k,v in junctions.items()}
+        G = nx.DiGraph()
+        for k,v in junctions.items():
+            maze_copy = deepcopy(self)
+            maze_copy.curr_pos = v
+            moves = maze_copy.get_moves(part2=pt2)
+            for move in moves:
+                m = deepcopy(maze_copy)
+                m.do_move(move)
+                while True:
+                    if m.curr_pos in junctions.values():
+                        j = reverse_junctions_dict[m.curr_pos]
+                        G.add_edge(k, j, weight=m.steps)
+                        break
+                    nexts = m.get_moves(part2=pt2)
+                    if len(nexts) > 1:
+                        raise Exception()
+                    if len(nexts) == 0:
+                        break
+                    m.do_move(nexts[0])
+
+        return G
 
 class Path():
     def __init__(self, nodes, length):
@@ -102,48 +130,15 @@ def solve_pt1(G):
         max_len = max(max_len, nx.path_weight(G, path, weight='weight'))
     return max_len
 
-def get_transitions(maze, pt2=False):
-    junctions = maze.get_junctions()
-    junctions = {f"j{k}":v for k,v in enumerate(junctions)}
-    junctions["S"] = maze.start_pos
-    junctions["E"] = maze.end_pos
-    reverse_junctions_dict = {v:k for k,v in junctions.items()}
-    transitions = {}
-    for k,v in junctions.items():
-        maze_copy = deepcopy(maze)
-        maze_copy.curr_pos = v
-        moves = maze_copy.get_moves(part2=pt2)
-        transitions[k] = []
-        for move in moves:
-            m = deepcopy(maze_copy)
-            m.do_move(move)
-            while True:
-                if m.curr_pos in junctions.values():
-                    j = (reverse_junctions_dict[m.curr_pos], m.steps)
-                    transitions[k].append(j)
-                    break
-                nexts = m.get_moves(part2=pt2)
-                if len(nexts) > 1:
-                    raise Exception()
-                if len(nexts) == 0:
-                    break
-                m.do_move(nexts[0])
-    G = nx.DiGraph()
-    for k,v in transitions.items():
-        for k2 in v:
-            dest, cost = k2
-            G.add_edge(k, dest, weight=cost)
-    return G
-
 def main(input_file):
     l = [list(line) for line in input_file.split("\n") if len(line) > 0]
     start_pos = (l[0].index("."), 0)
     end_pos = (l[-1].index("."), len(l)-1)
     maze = Maze(l, start_pos, start_pos, end_pos)
 
-    G = get_transitions(maze)
+    G = maze.to_graph()
     pt1_ans = solve_pt1(G)
 
-    G = get_transitions(maze, pt2=True)
+    G = maze.to_graph(pt2=True)
     pt2_ans = solve_pt1(G)
     return (pt1_ans, pt2_ans)
