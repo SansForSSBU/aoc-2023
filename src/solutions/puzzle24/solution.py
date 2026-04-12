@@ -49,24 +49,6 @@ def solve_pt1(particles):
             pass
     return pt1_ans
 
-def example_problem():
-    t1, t2, t3, t4, t5 = symbols("t1 t2 t3 t4 t5", real=True)
-    lines = [
-        "19, 13, 30 @ -2, 1, -2",
-        "18, 19, 22 @ -1, -1, -2",
-        "20, 25, 34 @ -2, -2, -4",
-        "12, 31, 28 @ -1, -2, -1",
-        "20, 19, 15 @ 1, -5, -3"
-    ]
-    sym = [t1, t2, t3, t4, t5]
-    particles = [Particle(p) for p in lines]
-    for idx, particle in enumerate(particles):
-        pass
-        time_sym = sym[idx]
-        particle.set_self_pos(time_sym)
-
-    pass
-
 def full_problem(particles):
     t_values = np.array([part.v[0] for part in particles])
     p_values = np.array([part.p[0] for part in particles])
@@ -76,31 +58,46 @@ def full_problem(particles):
 
 def main(input_file):
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
+    """
     for idx, particle in enumerate(particles):
-        pass
         time_sym = symbols(f"t{idx+1}", real=True)
         particle.set_self_pos(time_sym)
-    pt1_ans = 0#solve_pt1(particles)
-    particles = [v for k,v in enumerate(particles)]
-    x_pairs = [(p.v[0], p.p[0]) for p in particles]
-    vels = [p[0] for p in x_pairs]
-    unique_vels = list(set(vels))
-    three_vels = [v for v in unique_vels if vels.count(v) == 4]
-    t, t1, t2, t3, t4, c, m = symbols("t t1 t2 t3 t4 c m", real=True)
-    my_eqs = []
-    full_eq = m*t + c
-    for three in three_vels:
-        positions = sorted([pair[1] for pair in x_pairs if pair[0] == three])
-        my_eqs.append(positions[0] + t1 * three - full_eq.subs(t, t1))
-        my_eqs.append(positions[1] + t2 * three - full_eq.subs(t, t2))
-        my_eqs.append(positions[2] + t3 * three - full_eq.subs(t, t3))
-        my_eqs.append(positions[3] + t4 * three - full_eq.subs(t, t4))
-        my_eqs.append(t1)
-        my_eqs.append(t2-1)
-        solutions = solve(my_eqs, (t1, t2, t3, t4, c, m))
-        pass
-        pass
+    """
+    pt1_ans = solve_pt1(particles)
+    particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
+    x_positions = [part.p[0] for part in particles]
+    print([a for a in x_positions if x_positions.count(a) > 1])
+    y_positions = [part.p[1] for part in particles]
+    print([a for a in y_positions if y_positions.count(a) > 1])
+    z_positions = [part.p[2] for part in particles]
+    print([a for a in z_positions if z_positions.count(a) > 1])
+
+    yc = 273305746686315
+    ym = 15
+    destroyer_y_eq = yc + ym*t
+    t1 = solve([particles[0].y - destroyer_y_eq], t)[t]
+    t2 = solve([particles[1].y - destroyer_y_eq], t)[t]
+    m, c = symbols("m c", real=True)
+    x_eqs = [
+        particles[0].x.subs(t, t1) - (m*t1 + c),
+        particles[1].x.subs(t, t2) - (m*t2 + c)
+    ]
+    res = solve(x_eqs, (m, c))
+    xc = res[c]
+    xm = res[m]
+    m, c = symbols("m c", real=True)
+    z_eqs = [
+        particles[0].z.subs(t, t1) - (m*t1 + c),
+        particles[1].z.subs(t, t2) - (m*t2 + c)
+    ]
+    res = solve(z_eqs, (m, c))
+    zc = res[c]
+    zm = res[m]
+    pt2_ans = xc + yc + zc
+    pt2_ans = int(pt2_ans)
     pass
+
+
     
     
-    return (pt1_ans, 0)
+    return (pt1_ans, pt2_ans)
