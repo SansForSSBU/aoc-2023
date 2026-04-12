@@ -43,26 +43,13 @@ def solve_pt1(particles):
             if t1_val < 0 or t2_val < 0:
                 continue
             intersect_a = (p1.x.subs(t, t1_val), p1.y.subs(t, t1_val))
-            #intersect_b = (p2.x.subs(t, t2_val), p2.y.subs(t, t2_val))
             if is_in_test_area(intersect_a):
                 pt1_ans += 1
             pass
     return pt1_ans
 
-def full_problem(particles):
-    t_values = np.array([part.v[0] for part in particles])
-    p_values = np.array([part.p[0] for part in particles])
-    
-    m, c = np.polyfit(t_values, p_values, 1)
-    pass
-
 def main(input_file):
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
-    """
-    for idx, particle in enumerate(particles):
-        time_sym = symbols(f"t{idx+1}", real=True)
-        particle.set_self_pos(time_sym)
-    """
     pt1_ans = solve_pt1(particles)
     particles = [Particle(x) for x in input_file.split("\n") if len(x) != 0]
     x_positions = [part.p[0] for part in particles]
@@ -95,9 +82,5 @@ def main(input_file):
     zm = res[m]
     pt2_ans = xc + yc + zc
     pt2_ans = int(pt2_ans)
-    pass
 
-
-    
-    
     return (pt1_ans, pt2_ans)
