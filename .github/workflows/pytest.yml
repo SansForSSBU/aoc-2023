@@ -32,3 +32,9 @@ jobs:
     - name: Run tests
       run: |
         pytest --maxfail=1 --disable-warnings -v
+
+    - name: Upload Pathfinding Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-report
+        path: performance-report.json

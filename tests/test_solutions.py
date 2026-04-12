@@ -19,4 +19,5 @@ def test_solutions():
         elapsed_time = end_time - start_time
         times[puzzle_num] = elapsed_time
         assert answer == tuple(answers[str(puzzle_num)])
-    print(times)
+    with open("performance-report.json", "w") as f:
+        json.dump(times, f)
