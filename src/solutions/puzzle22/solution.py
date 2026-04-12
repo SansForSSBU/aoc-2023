@@ -37,7 +37,7 @@ def ranges_overlap(range1, range2):
     l = list(r1 & r2)
     return len(l) != 0
 
-def solve_pt1(bricks):
+def simulate_falling_bricks(bricks):
     bricks = sorted(bricks, key=lambda brick: brick.pos1[2]*1000 + brick.pos2[2])
     landed = []
     supports = []
@@ -57,8 +57,7 @@ def solve_pt1(bricks):
             brick = fallen_brick
         landed.append(brick)
         supports.append([str(x) for x in supported_by])
-        print(idx)
-    c = set()
+
     str_landed = [str(brick) for brick in landed]
     for idx, s in enumerate(supports):
         supports[idx] = [str_landed.index(x) for x in s]
@@ -67,11 +66,14 @@ def solve_pt1(bricks):
     for k,v in supported_by.items():
         for a in v:
             supports_others[a].append(k)
-    # Part 1:
+    return bricks, supported_by, supports_others
+
+def solve_pt1(bricks, supported_by, supports_others):
     necessary = [k for k in supports_others.keys() if [k] in list(supported_by.values())]
     pt1_ans = len(bricks) - len(necessary)
+    return pt1_ans
 
-    # Part 2?
+def solve_pt2(bricks, supported_by, supports_others):
     pt2_ans = 0
     for brickId in supports_others.keys():
         destroyed_ids = [brickId]
@@ -85,10 +87,11 @@ def solve_pt1(bricks):
                 break
         
         pt2_ans += len(destroyed_ids) - 1
-
-    return (pt1_ans, pt2_ans)
+    return pt2_ans
 
 def main(input_file):
     bricks = [Brick(b) for b in input_file.split("\n") if len(b) > 0]
-    pt1_ans, pt2_ans = solve_pt1(bricks)
+    bricks, supported_by, supports_others = simulate_falling_bricks(bricks)
+    pt1_ans = solve_pt1(bricks, supported_by, supports_others)
+    pt2_ans = solve_pt2(bricks, supported_by, supports_others)
     return (pt1_ans, pt2_ans)

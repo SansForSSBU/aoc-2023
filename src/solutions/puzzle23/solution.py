@@ -95,7 +95,6 @@ class Path():
         return self.__str__()
 
 def solve_pt1(transitions):
-    # Find the journey from S to E which takes the most steps
     max_len = 0
     paths = [Path(["S"], 0)]
     while len(paths) > 0:
