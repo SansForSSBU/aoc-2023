@@ -3,3 +3,4 @@ pytest
 pulp
 numpy
 sympy
+networkx
